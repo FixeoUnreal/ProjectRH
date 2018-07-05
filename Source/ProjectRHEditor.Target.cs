@@ -9,5 +9,11 @@ public class ProjectRHEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		ExtraModuleNames.Add("ProjectRH");
-	}
+
+        //Non-Unity-mode
+        bUseUnityBuild = false;
+
+        //New standard
+        bUsePCHFiles = false;
+    }
 }

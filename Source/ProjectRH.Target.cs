@@ -9,5 +9,11 @@ public class ProjectRHTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		ExtraModuleNames.Add("ProjectRH");
-	}
+
+        //Non-Unity-mode
+        bUseUnityBuild = false;
+
+        //New standard
+        bUsePCHFiles = false;
+    }
 }
