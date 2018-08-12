@@ -13,6 +13,9 @@ class AProjectRHGameMode : public AGameModeBase
 
 public:
 	AProjectRHGameMode();
+
+private:
+	
 };
 
 

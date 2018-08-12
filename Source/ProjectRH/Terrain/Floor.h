@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "Floor.generated.h"
 
+class USceneComponent;
+class UStaticMeshComponent;
+class UArrowComponent;
+
 UCLASS()
 class PROJECTRH_API AFloor : public AActor
 {
@@ -19,10 +23,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* SceneComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UArrowComponent* ArrowComp;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	
 	
 };
