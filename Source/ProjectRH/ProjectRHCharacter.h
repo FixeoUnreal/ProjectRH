@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ProjectRHCharacter.generated.h"
 
+class ASHPowerUp;
+
 UCLASS(config=Game)
 class AProjectRHCharacter : public ACharacter
 {
@@ -63,10 +65,16 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
+	ASHPowerUp* PowerUpInstance;
+
+	void ActivatePowerUp();
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	void SetPowerUp(ASHPowerUp* PowerUpToSet);
 };
 

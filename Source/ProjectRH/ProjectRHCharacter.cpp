@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
+#include "Pickup/SHPowerUp.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
@@ -57,6 +58,7 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("UsePowerUp", IE_Pressed, this, &AProjectRHCharacter::ActivatePowerUp);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AProjectRHCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectRHCharacter::MoveRight);
@@ -77,6 +79,29 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AProjectRHCharacter::OnResetVR);
 }
 
+
+void AProjectRHCharacter::ActivatePowerUp()
+{
+	if (PowerUpInstance)
+	{
+		PowerUpInstance->Activate(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PowerUpInstance was not set. PowerUp can not be activated."));
+	}
+}
+
+void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
+{
+	// Clear unused PowerUp
+	if (PowerUpInstance)
+	{
+		PowerUpInstance->Destroy();
+	}
+
+	PowerUpInstance = PowerUpToSet;
+}
 
 void AProjectRHCharacter::OnResetVR()
 {
