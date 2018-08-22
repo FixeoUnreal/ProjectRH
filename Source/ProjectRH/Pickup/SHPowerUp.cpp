@@ -52,11 +52,15 @@ void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 {
 	//OnAcquired(ActivateFor);
 
-	//Deliver the character the corresponding PowerUp
-	if(!ActivateFor){ return; }
-	AProjectRHCharacter* PlayerChar = Cast<AProjectRHCharacter>(ActivateFor);
-	if(!PlayerChar){ return; }
-	PlayerChar->SetPowerUp(this);
+	if (Role == ROLE_Authority)
+	{
+		//Deliver the character the corresponding PowerUp
+		if (!ActivateFor) { return; }
+		AProjectRHCharacter* PlayerChar = Cast<AProjectRHCharacter>(ActivateFor);
+		if (!PlayerChar) { return; }
+		PlayerChar->SetPowerUp(this);
+	}
+	
 
 	bIsPowerupActive = true;
 	OnRep_PowerupActive();

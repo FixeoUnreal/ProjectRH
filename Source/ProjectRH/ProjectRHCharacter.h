@@ -65,10 +65,13 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
 	ASHPowerUp* PowerUpInstance;
 
 	void ActivatePowerUp();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerActivatePowerUp();
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -76,5 +79,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	void SetPowerUp(ASHPowerUp* PowerUpToSet);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 

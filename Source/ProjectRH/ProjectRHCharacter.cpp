@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
 #include "Pickup/SHPowerUp.h"
+#include <UnrealNetwork.h>
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
@@ -58,7 +59,7 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("UsePowerUp", IE_Pressed, this, &AProjectRHCharacter::ActivatePowerUp);
+	PlayerInputComponent->BindAction("UsePowerUp", IE_Pressed, this, &AProjectRHCharacter::ServerActivatePowerUp);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AProjectRHCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectRHCharacter::MoveRight);
@@ -82,6 +83,10 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 void AProjectRHCharacter::ActivatePowerUp()
 {
+	if(Role < ROLE_Authority)
+	{ 
+		return;
+	}
 	if (PowerUpInstance)
 	{
 		PowerUpInstance->Activate(this);
@@ -90,6 +95,16 @@ void AProjectRHCharacter::ActivatePowerUp()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PowerUpInstance was not set. PowerUp can not be activated."));
 	}
+}
+
+void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
+{
+	ActivatePowerUp();
+}
+
+bool AProjectRHCharacter::ServerActivatePowerUp_Validate()
+{
+	return true;
 }
 
 void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
@@ -101,6 +116,13 @@ void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
 	}
 
 	PowerUpInstance = PowerUpToSet;
+}
+
+void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AProjectRHCharacter, PowerUpInstance);
 }
 
 void AProjectRHCharacter::OnResetVR()
