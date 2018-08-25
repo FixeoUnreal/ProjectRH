@@ -7,6 +7,10 @@
 #include <Components/PointLightComponent.h>
 #include <GameFramework/RotatingMovementComponent.h>
 #include "ProjectRHCharacter.h"
+#include <Kismet/GameplayStatics.h>
+#include "Components/SkeletalMeshComponent.h"
+#include <Particles/ParticleSystemComponent.h>
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 ASHPowerUp::ASHPowerUp()
@@ -25,7 +29,7 @@ ASHPowerUp::ASHPowerUp()
 	PointLightComp->SetupAttachment(MeshComp);
 
 	RotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComp"));
-	
+
 	// Initializes primitive variables
 	bIsPowerupActive = false;
 
@@ -37,21 +41,37 @@ ASHPowerUp::ASHPowerUp()
 void ASHPowerUp::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 
-void ASHPowerUp::OnRep_PowerupActive()
+void ASHPowerUp::OnRep_PowerupAcquired()
 {
 	OnPowerupStateChanged(bIsPowerupActive);
 
+	if (AcquireEffect)
+	{
+		AcquireEffectComp = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			AcquireEffect,
+			GetActorTransform()
+		);
+		FTimerHandle TimerHandle_FinishEffect;
+		GetWorldTimerManager().SetTimer(TimerHandle_FinishEffect, this, &ASHPowerUp::EndAcquireEffect, 2.f);
+	}
 	MeshComp->SetVisibility(false, true);
+}
+
+void ASHPowerUp::EndAcquireEffect()
+{
+	if (AcquireEffectComp)
+	{
+		AcquireEffectComp->Deactivate();
+	}
 }
 
 void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 {
-	//OnAcquired(ActivateFor);
-
 	if (Role == ROLE_Authority)
 	{
 		//Deliver the character the corresponding PowerUp
@@ -60,10 +80,10 @@ void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 		if (!PlayerChar) { return; }
 		PlayerChar->SetPowerUp(this);
 	}
-	
+
 
 	bIsPowerupActive = true;
-	OnRep_PowerupActive();
+	OnRep_PowerupAcquired();
 
 }
 
@@ -74,4 +94,11 @@ void ASHPowerUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(ASHPowerUp, bIsPowerupActive);
 }
 
+void ASHPowerUp::Activate(AProjectRHCharacter* PlayerChar)
+{
+	// TODO Implement logic before and after OnActivate call if needed
+
+	// Logic that will be implemented in subclass BP
+	OnActivate(PlayerChar);
+}
 
