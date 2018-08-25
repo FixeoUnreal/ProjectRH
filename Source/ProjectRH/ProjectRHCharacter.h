@@ -72,6 +72,9 @@ protected:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerActivatePowerUp();
+
+	UFUNCTION(BlueprintCallable, Category = "RHCharacter")
+	void ForceMoveForward();
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

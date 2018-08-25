@@ -97,6 +97,11 @@ void AProjectRHCharacter::ActivatePowerUp()
 	}
 }
 
+void AProjectRHCharacter::ForceMoveForward()
+{
+	MoveForward(1.f);
+}
+
 void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
 {
 	ActivatePowerUp();
