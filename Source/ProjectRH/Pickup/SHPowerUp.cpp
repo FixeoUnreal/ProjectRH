@@ -32,6 +32,7 @@ ASHPowerUp::ASHPowerUp()
 
 	// Initializes primitive variables
 	bIsPowerupActive = false;
+	bIsPowerupActivated = false;
 
 	// Setup multiplayer 
 	SetReplicates(true);
@@ -62,6 +63,20 @@ void ASHPowerUp::OnRep_PowerupAcquired()
 	MeshComp->SetVisibility(false, true);
 }
 
+void ASHPowerUp::OnRep_PowerupActivated()
+{
+	if (Role < ROLE_Authority)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnRep_PowerupActivated called on client"));
+	}
+	PlayActivationEffects();
+}
+
+void ASHPowerUp::MulticastOnActivate_Implementation(ACharacter* PlayerChar)
+{
+	OnActivate(PlayerChar);
+}
+
 void ASHPowerUp::EndAcquireEffect()
 {
 	if (AcquireEffectComp)
@@ -79,6 +94,7 @@ void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 		AProjectRHCharacter* PlayerChar = Cast<AProjectRHCharacter>(ActivateFor);
 		if (!PlayerChar) { return; }
 		PlayerChar->SetPowerUp(this);
+		OwningCharacter = PlayerChar;
 	}
 
 
@@ -92,13 +108,18 @@ void ASHPowerUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASHPowerUp, bIsPowerupActive);
+	DOREPLIFETIME(ASHPowerUp, bIsPowerupActivated);
+	DOREPLIFETIME(ASHPowerUp, OwningCharacter);
 }
 
-void ASHPowerUp::Activate(AProjectRHCharacter* PlayerChar)
+void ASHPowerUp::Activate(ACharacter* PlayerChar)
 {
-	// TODO Implement logic before and after OnActivate call if needed
-
-	// Logic that will be implemented in subclass BP
-	OnActivate(PlayerChar);
+	if (PlayerChar)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Activate called!"));
+		MulticastOnActivate(PlayerChar);
+		bIsPowerupActivated = true;
+		OnRep_PowerupActivated();
+	}
 }
 

@@ -12,6 +12,7 @@ class UPointLightComponent;
 class URotatingMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
+class AProjectRHCharacter;
 
 UCLASS()
 class PROJECTRH_API ASHPowerUp : public AActor
@@ -29,13 +30,28 @@ protected:
 	UFUNCTION()
 	void OnRep_PowerupAcquired();
 
+	UFUNCTION()
+	void OnRep_PowerupActivated();
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
 	void OnPowerupStateChanged(bool bNewIsActive);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
-	void OnActivate(AProjectRHCharacter* PlayerChar);
+	void OnActivate(ACharacter* PlayerChar);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnActivate(ACharacter* PlayerChar);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
+	void PlayActivationEffects();
 
 	void EndAcquireEffect();
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Powerups")
+	AProjectRHCharacter* OwningCharacter;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PowerupActivated)
+	bool bIsPowerupActivated;
 
 	UPROPERTY(ReplicatedUsing = OnRep_PowerupAcquired)
 	bool bIsPowerupActive;
@@ -65,6 +81,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void Activate(AProjectRHCharacter* PlayerChar);
+	void Activate(ACharacter* PlayerChar);
 	
 };
