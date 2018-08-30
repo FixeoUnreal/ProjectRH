@@ -30,31 +30,23 @@ protected:
 	UFUNCTION()
 	void OnRep_PowerupAcquired();
 
-	UFUNCTION()
-	void OnRep_PowerupActivated();
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
 	void OnPowerupStateChanged(bool bNewIsActive);
 
+	// Implemented in subclass and determines powerup's behaviour on activation
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
-	void OnActivate(ACharacter* PlayerChar);
+	void OnActivate();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOnActivate(ACharacter* PlayerChar);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
-	void PlayActivationEffects();
+	void MulticastOnActivate();
 
 	void EndAcquireEffect();
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Powerups")
 	AProjectRHCharacter* OwningCharacter;
 
-	UPROPERTY(ReplicatedUsing = OnRep_PowerupActivated)
-	bool bIsPowerupActivated;
-
 	UPROPERTY(ReplicatedUsing = OnRep_PowerupAcquired)
-	bool bIsPowerupActive;
+	bool bIsPowerupAcquired;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USceneComponent* Scene;
@@ -76,11 +68,13 @@ protected:
 public:
 	void AcquirePowerup(AActor* ActivateFor);
 
+	// Function to call after acquiring powerup (Play animations, particle systems, etc.)
 	UFUNCTION(BlueprintImplementableEvent, Category = "Powerups")
 	void OnAcquired(AActor* ActivateFor);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void Activate(ACharacter* PlayerChar);
+	// Activate Powerup, which can only be called on server
+	void Activate();
 	
 };

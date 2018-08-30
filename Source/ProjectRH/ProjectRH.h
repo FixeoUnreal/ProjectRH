@@ -3,3 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#define CC_ATTACKZONE	ECC_GameTraceChannel1

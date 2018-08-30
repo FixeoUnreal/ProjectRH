@@ -11,6 +11,8 @@
 #include "Engine/World.h"
 #include "Pickup/SHPowerUp.h"
 #include <UnrealNetwork.h>
+#include <Components/BoxComponent.h>
+#include "ProjectRH.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
@@ -45,6 +47,14 @@ AProjectRHCharacter::AProjectRHCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Create attackable zone
+	AttackZone = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackZone"));
+	AttackZone->SetupAttachment(RootComponent);
+	AttackZone->SetRelativeLocation(FVector(650, 0, 0));
+	AttackZone->SetBoxExtent(FVector(600, 500, 100));
+	AttackZone->SetCollisionProfileName(TEXT("AttackZone"));
+	GetCapsuleComponent()->SetCollisionResponseToChannel(CC_ATTACKZONE, ECR_Overlap);
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -89,7 +99,7 @@ void AProjectRHCharacter::ActivatePowerUp()
 	}
 	if (PowerUpInstance)
 	{
-		PowerUpInstance->Activate(this);
+		PowerUpInstance->Activate();
 	}
 	else
 	{
@@ -121,6 +131,11 @@ void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
 	}
 
 	PowerUpInstance = PowerUpToSet;
+}
+
+UBoxComponent* AProjectRHCharacter::GetAttackZone() const
+{
+	return AttackZone;
 }
 
 void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

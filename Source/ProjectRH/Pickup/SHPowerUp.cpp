@@ -31,8 +31,7 @@ ASHPowerUp::ASHPowerUp()
 	RotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComp"));
 
 	// Initializes primitive variables
-	bIsPowerupActive = false;
-	bIsPowerupActivated = false;
+	bIsPowerupAcquired = false;
 
 	// Setup multiplayer 
 	SetReplicates(true);
@@ -48,7 +47,7 @@ void ASHPowerUp::BeginPlay()
 
 void ASHPowerUp::OnRep_PowerupAcquired()
 {
-	OnPowerupStateChanged(bIsPowerupActive);
+	OnPowerupStateChanged(bIsPowerupAcquired);
 
 	if (AcquireEffect)
 	{
@@ -63,18 +62,9 @@ void ASHPowerUp::OnRep_PowerupAcquired()
 	MeshComp->SetVisibility(false, true);
 }
 
-void ASHPowerUp::OnRep_PowerupActivated()
+void ASHPowerUp::MulticastOnActivate_Implementation()
 {
-	if (Role < ROLE_Authority)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnRep_PowerupActivated called on client"));
-	}
-	PlayActivationEffects();
-}
-
-void ASHPowerUp::MulticastOnActivate_Implementation(ACharacter* PlayerChar)
-{
-	OnActivate(PlayerChar);
+	OnActivate();
 }
 
 void ASHPowerUp::EndAcquireEffect()
@@ -98,7 +88,7 @@ void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 	}
 
 
-	bIsPowerupActive = true;
+	bIsPowerupAcquired = true;
 	OnRep_PowerupAcquired();
 
 }
@@ -107,19 +97,15 @@ void ASHPowerUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASHPowerUp, bIsPowerupActive);
-	DOREPLIFETIME(ASHPowerUp, bIsPowerupActivated);
+	DOREPLIFETIME(ASHPowerUp, bIsPowerupAcquired);
 	DOREPLIFETIME(ASHPowerUp, OwningCharacter);
 }
 
-void ASHPowerUp::Activate(ACharacter* PlayerChar)
+void ASHPowerUp::Activate()
 {
-	if (PlayerChar)
+	if (OwningCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Activate called!"));
-		MulticastOnActivate(PlayerChar);
-		bIsPowerupActivated = true;
-		OnRep_PowerupActivated();
+		MulticastOnActivate();
 	}
 }
 

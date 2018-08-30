@@ -7,6 +7,7 @@
 #include "ProjectRHCharacter.generated.h"
 
 class ASHPowerUp;
+class UBoxComponent;
 
 UCLASS(config=Game)
 class AProjectRHCharacter : public ACharacter
@@ -65,9 +66,6 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
-	ASHPowerUp* PowerUpInstance;
-
 	void ActivatePowerUp();
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -75,6 +73,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "RHCharacter")
 	void ForceMoveForward();
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
+	ASHPowerUp* PowerUpInstance;
+
+	// In zone overlapping actors can be "attacked" by this character
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UBoxComponent* AttackZone;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -82,6 +88,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	void SetPowerUp(ASHPowerUp* PowerUpToSet);
+
+	UFUNCTION(BlueprintPure, Category = "RHCharacter")
+	UBoxComponent* GetAttackZone() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
