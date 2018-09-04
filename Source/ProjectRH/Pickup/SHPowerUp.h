@@ -13,6 +13,7 @@ class URotatingMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
 class AProjectRHCharacter;
+class UTexture2D;
 
 UCLASS()
 class PROJECTRH_API ASHPowerUp : public AActor
@@ -64,6 +65,9 @@ protected:
 	UParticleSystem* AcquireEffect;
 
 	UParticleSystemComponent* AcquireEffectComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Powerup")
+	UTexture2D* PowerupUIImage;
 
 public:
 	void AcquirePowerup(AActor* ActivateFor);
