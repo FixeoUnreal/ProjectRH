@@ -93,5 +93,9 @@ public:
 	UBoxComponent* GetAttackZone() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
+	// Prevent character from activating the same Powerup again 
+	bool bPowerUpActivated = false;
 };
 

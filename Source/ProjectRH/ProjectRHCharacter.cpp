@@ -93,13 +93,14 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 void AProjectRHCharacter::ActivatePowerUp()
 {
-	if(Role < ROLE_Authority)
+	if(Role < ROLE_Authority || bPowerUpActivated)
 	{ 
 		return;
 	}
 	if (PowerUpInstance)
 	{
 		PowerUpInstance->Activate();
+		bPowerUpActivated = true;
 	}
 	else
 	{
@@ -124,13 +125,14 @@ bool AProjectRHCharacter::ServerActivatePowerUp_Validate()
 
 void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
 {
-	// Clear unused PowerUp
-	if (PowerUpInstance)
+	// Clear unused PowerUp. No need to call after activation because it will destroy itself
+	if (PowerUpInstance && !bPowerUpActivated)
 	{
 		PowerUpInstance->Destroy();
 	}
 
 	PowerUpInstance = PowerUpToSet;
+	bPowerUpActivated = false;
 }
 
 UBoxComponent* AProjectRHCharacter::GetAttackZone() const
