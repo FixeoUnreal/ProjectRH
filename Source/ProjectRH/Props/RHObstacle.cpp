@@ -18,7 +18,7 @@ ARHObstacle::ARHObstacle()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxCollision->SetupAttachment(RootComponent);
-	
+
 	SetReplicates(true);
 }
 
@@ -26,26 +26,13 @@ ARHObstacle::ARHObstacle()
 void ARHObstacle::BeginPlay()
 {
 	Super::BeginPlay();
-
-
 }
 
-void ARHObstacle::MulticastPlayDestroyEffect_Implementation()
+void ARHObstacle::MulticastBeginOverlap_Implementation()
 {
-	PlayDestroyEffect();
+	OnBeginOverlap(OverlappingCharacter);
 }
 
-void ARHObstacle::PlayDestroyEffect()
-{
-	if (DestroyEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			DestroyEffect,
-			GetActorTransform()
-		);
-	}
-}
 
 // Called every frame
 void ARHObstacle::Tick(float DeltaTime)
@@ -58,12 +45,16 @@ void ARHObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	AProjectRHCharacter* Character = Cast<AProjectRHCharacter>(OtherActor);
+	OverlappingCharacter = Cast<AProjectRHCharacter>(OtherActor);
 
-	if (HasAuthority() && Character)
+	if (HasAuthority() && OverlappingCharacter)
 	{
-		MulticastPlayDestroyEffect();
-		Destroy();
+		MulticastBeginOverlap();
 	}
+
+	// Make obstacle unimpactable after collision
+	MeshComp->SetVisibility(false, true);
+	MeshComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BoxCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 

@@ -9,6 +9,7 @@
 class UStaticMeshComponent;
 class UParticleSystem;
 class UBoxComponent;
+class AProjectRHCharacter;
 
 UCLASS()
 class PROJECTRH_API ARHObstacle : public AActor
@@ -23,10 +24,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastPlayDestroyEffect();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastBeginOverlap();
 
-	void PlayDestroyEffect();
+	UFUNCTION(BlueprintImplementableEvent, Category = "RHObstacle")
+	void OnBeginOverlap(AProjectRHCharacter* OverlappingCharacter);
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -35,13 +37,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* BoxCollision;
 
-	UPROPERTY(EditDefaultsOnly, Category = "RHObstacle")
-	UParticleSystem* DestroyEffect;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+private:
+	AProjectRHCharacter* OverlappingCharacter;
 	
 };
