@@ -183,7 +183,15 @@ void AProjectRHCharacter::MoveForward(float Value)
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		FVector Direction;
+		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
+		{
+			Direction = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+		}
+		else
+		{
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		}
 		AddMovementInput(Direction, Value);
 	}
 }
