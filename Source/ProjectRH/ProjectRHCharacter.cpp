@@ -71,6 +71,9 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("UsePowerUp", IE_Pressed, this, &AProjectRHCharacter::ServerActivatePowerUp);
 
+	PlayerInputComponent->BindAction("PCResetMoveForward", IE_Released, this, &AProjectRHCharacter::ResetMoveForwardValue);
+	PlayerInputComponent->BindAction("PCResetMoveRight", IE_Released, this, &AProjectRHCharacter::ResetMoveRightValue);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AProjectRHCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectRHCharacter::MoveRight);
 
@@ -113,6 +116,16 @@ void AProjectRHCharacter::ForceMoveForward()
 	MoveForward(1.f);
 }
 
+void AProjectRHCharacter::ResetMoveForwardValue()
+{
+	MoveForwardValue = 0.f;
+}
+
+void AProjectRHCharacter::ResetMoveRightValue()
+{
+	MoveRightValue = 0.f;
+}
+
 void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
 {
 	ActivatePowerUp();
@@ -121,6 +134,12 @@ void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
 bool AProjectRHCharacter::ServerActivatePowerUp_Validate()
 {
 	return true;
+}
+
+void AProjectRHCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	DesiredRotation = GetActorRotation();
 }
 
 void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
@@ -186,13 +205,16 @@ void AProjectRHCharacter::MoveForward(float Value)
 		FVector Direction;
 		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
 		{
-			Direction = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+			Direction = DesiredRotation.Vector().ToOrientationQuat().GetUpVector();
 		}
 		else
 		{
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		}
 		AddMovementInput(Direction, Value);
+
+		//For moveforward animation
+		MoveForwardValue = Value;
 	}
 }
 
@@ -205,8 +227,19 @@ void AProjectRHCharacter::MoveRight(float Value)
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 	
 		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		FVector Direction;
+		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
+		{
+			Direction = DesiredRotation.Vector().ToOrientationQuat().GetRightVector();
+		}
+		else
+		{
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		}
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+
+		// For moveright animation
+		MoveRightValue = Value;
 	}
 }

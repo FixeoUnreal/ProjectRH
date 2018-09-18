@@ -81,11 +81,28 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* AttackZone;
 
+	UPROPERTY(BlueprintReadWrite, Category = "RHCharacter")
+	FRotator DesiredRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
+	float MoveForwardValue = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
+	float MoveRightValue = 0;
+
+protected:
+	void ResetMoveForwardValue();
+
+	void ResetMoveRightValue();
+
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	void BeginPlay() override;
 
 	void SetPowerUp(ASHPowerUp* PowerUpToSet);
 
