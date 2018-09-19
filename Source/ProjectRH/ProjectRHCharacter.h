@@ -90,6 +90,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
 	float MoveRightValue = 0;
 
+	float BaseWalkSpeed = 0.f;
+
 protected:
 	void ResetMoveForwardValue();
 
@@ -110,6 +112,8 @@ public:
 	UBoxComponent* GetAttackZone() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	float GetBaseWalkSpeed() const;
 
 private:
 	// Prevent character from activating the same Powerup again 

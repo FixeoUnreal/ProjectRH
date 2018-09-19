@@ -140,6 +140,10 @@ void AProjectRHCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	DesiredRotation = GetActorRotation();
+
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if(!ensure(MovementComp)){ return; }
+	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
 }
 
 void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
@@ -164,6 +168,11 @@ void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AProjectRHCharacter, PowerUpInstance);
+}
+
+float AProjectRHCharacter::GetBaseWalkSpeed() const
+{
+	return BaseWalkSpeed;
 }
 
 void AProjectRHCharacter::OnResetVR()
