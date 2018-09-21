@@ -13,6 +13,9 @@
 #include <UnrealNetwork.h>
 #include <Components/BoxComponent.h>
 #include "ProjectRH.h"
+#include "RHPlayerState.h"
+#include "Terrain/WayGate.h"
+#include "TimerManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
@@ -126,6 +129,24 @@ void AProjectRHCharacter::ResetMoveRightValue()
 	MoveRightValue = 0.f;
 }
 
+void AProjectRHCharacter::UpdateDistanceToNextWayGate()
+{
+	if(!ensure(PlayerState)){ return; }
+	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
+	if(!ensure(RHPlayerState)){ return; }
+	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
+	if(!ensure(NextWaveGate)){ return; }
+
+	// Calculate the positive distance 
+	float ToNextWaveGateDistance = FMath::Abs(FVector::PointPlaneDist(
+		GetActorLocation(),
+		NextWaveGate->GetActorLocation(),
+		NextWaveGate->GetActorForwardVector()
+	));
+
+	RHPlayerState->SetDistanceToNextWayGate(ToNextWaveGateDistance);
+}
+
 void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
 {
 	ActivatePowerUp();
@@ -144,6 +165,28 @@ void AProjectRHCharacter::BeginPlay()
 	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
 	if(!ensure(MovementComp)){ return; }
 	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
+
+	if (HasAuthority())
+	{
+		GetWorldTimerManager().SetTimer(
+			TimerHandle_UpdateDistanceToNextWaveGate,
+			this,
+			&AProjectRHCharacter::UpdateDistanceToNextWayGate,
+			0.5f,
+			true
+		);
+	}
+	
+}
+
+void AProjectRHCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (HasAuthority())
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_UpdateDistanceToNextWaveGate);
+	}
 }
 
 void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
@@ -166,8 +209,10 @@ UBoxComponent* AProjectRHCharacter::GetAttackZone() const
 void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
 	DOREPLIFETIME(AProjectRHCharacter, PowerUpInstance);
+	DOREPLIFETIME(AProjectRHCharacter, bInRunMode);
+	DOREPLIFETIME(AProjectRHCharacter, DesiredRotation);
 }
 
 float AProjectRHCharacter::GetBaseWalkSpeed() const

@@ -32,6 +32,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	// Automatically running forward
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "RHCharacter")
+	bool bInRunMode = false;
+
+
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -74,6 +79,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "RHCharacter")
 	void ForceMoveForward();
 
+protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
 	ASHPowerUp* PowerUpInstance;
 
@@ -81,7 +87,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* AttackZone;
 
-	UPROPERTY(BlueprintReadWrite, Category = "RHCharacter")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHCharacter")
 	FRotator DesiredRotation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
@@ -92,11 +98,15 @@ protected:
 
 	float BaseWalkSpeed = 0.f;
 
+
 protected:
 	void ResetMoveForwardValue();
 
 	void ResetMoveRightValue();
 
+	// Update the distance to next WayGate in PlayerState
+	UFUNCTION()
+	void UpdateDistanceToNextWayGate();
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -105,6 +115,8 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void SetPowerUp(ASHPowerUp* PowerUpToSet);
 
@@ -118,5 +130,7 @@ public:
 private:
 	// Prevent character from activating the same Powerup again 
 	bool bPowerUpActivated = false;
+
+	FTimerHandle TimerHandle_UpdateDistanceToNextWaveGate;
 };
 
