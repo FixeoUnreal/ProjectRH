@@ -8,11 +8,14 @@ void ARHGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	// Adding new player to score system
+	// Adds new player to score system
+	// This is for rooms that are hosted by players, because the InitializeScoreboard from GameState
+	// is called before PostLogin of joining players
 	ARHGameState* RHGameState = Cast<ARHGameState>(GameState);
 	if(!ensure(RHGameState)){ return; }
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(NewPlayer->PlayerState);
 	if(!ensure(RHPlayerState)){ return; }
-
+	
 	RHGameState->AddNewPlayerToScoreBoard(RHPlayerState);
 }
+

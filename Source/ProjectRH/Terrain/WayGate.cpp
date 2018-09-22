@@ -37,7 +37,7 @@ void AWayGate::OnMeshCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 		AController* CharacterController = OverlappingCharacter->GetController();
 		if(!ensure(CharacterController)){ return; }
 		ARHPlayerState* CharacterPlayerState = Cast<ARHPlayerState>(CharacterController->PlayerState);
-		if(!ensure(CharacterPlayerState)){ return; }
+		if(!CharacterPlayerState){ return; }
 
 		// Increases this count for player's position measurement
 		int32 NewCount = CharacterPlayerState->GetPassedWayGateCount() + 1;

@@ -17,10 +17,16 @@ ARHGameState::ARHGameState()
 void ARHGameState::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		InitializeScoreBoard();
+	}
 }
 
 void ARHGameState::InitializeScoreBoard()
 {
+	// Finds all WayGates and puts them in a sorted list
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(this, AWayGate::StaticClass(), FoundActors);
 	for (AActor* FoundActor : FoundActors)
@@ -45,7 +51,6 @@ void ARHGameState::InitializeScoreBoard()
 	// and populates score board
 	for (APlayerState* PlayerState : PlayerArray)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enter for"));
 		ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
 		
 		AddNewPlayerToScoreBoard(RHPlayerState);
@@ -58,18 +63,7 @@ void ARHGameState::Tick(float DeltaSeconds)
 
 	if (HasAuthority() && HasMatchStarted())
 	{
-		if (!bInitScoreBoard)
-		{
-			InitializeScoreBoard();
-			bInitScoreBoard = true;
-			UE_LOG(LogTemp, Warning, TEXT("After init score"));
-		}
-		else
-		{
 			UpdateScoreBoard();
-			UE_LOG(LogTemp, Warning, TEXT("PlayerArr Size: %d"), PlayerArray.Num());
-			UE_LOG(LogTemp, Warning, TEXT("PositionList Size: %d"), PositionList.Num());
-		}
 	}
 }
 
@@ -109,6 +103,7 @@ TArray<ARHPlayerState*> ARHGameState::GetPositionList() const
 
 void ARHGameState::AddNewPlayerToScoreBoard(ARHPlayerState* RHPlayerState)
 {
+	// Populates PlayerState with array of WayGates in numerical order
 	if(!ensure(RHPlayerState)){ return; }
 	UE_LOG(LogTemp, Warning, TEXT("Enter ADD"));
 

@@ -131,7 +131,7 @@ void AProjectRHCharacter::ResetMoveRightValue()
 
 void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 {
-	if(!ensure(PlayerState)){ return; }
+	if(!PlayerState){ return; }
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
 	if(!ensure(RHPlayerState)){ return; }
 	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
