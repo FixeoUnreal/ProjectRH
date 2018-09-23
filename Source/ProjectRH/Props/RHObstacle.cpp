@@ -11,9 +11,6 @@
 // Sets default values
 ARHObstacle::ARHObstacle()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	SetRootComponent(Scene);
 
@@ -40,49 +37,21 @@ void ARHObstacle::OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComp
 
 	if (HasAuthority() && OverlappingCharacter)
 	{
-		MulticastApplyCollisionEffect();
+		ApplyCollisionEffect();
+
+		MulticastSetVisibility();
 	}
 }
 
-void ARHObstacle::MulticastApplyCollisionEffect_Implementation()
+void ARHObstacle::MulticastSetVisibility_Implementation()
 {
-	ApplyCollisionEffect();
-
 	if (bInvisibleAfterOverlap)
 	{
 		// Make obstacle unimpactable after collision
+		UE_LOG(LogTemp, Warning, TEXT("Obstacle: Set Vis"));
 		MeshComp->SetVisibility(false, true);
 		MeshComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 		BoxCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	}
-}
-
-
-
-void ARHObstacle::MulticastBeginOverlap_Implementation()
-{
-	OnBeginOverlap(OverlappingCharacter);
-}
-
-
-// Called every frame
-void ARHObstacle::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void ARHObstacle::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	Super::NotifyActorBeginOverlap(OtherActor);
-
-	//OverlappingCharacter = Cast<AProjectRHCharacter>(OtherActor);
-
-	//if (HasAuthority() && OverlappingCharacter)
-	//{
-	//	MulticastBeginOverlap();
-	//}
-
-	
 }
 

@@ -27,13 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastBeginOverlap();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastApplyCollisionEffect();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "RHObstacle")
-	void OnBeginOverlap(AProjectRHCharacter* OverlappingCharacter);
+	void MulticastSetVisibility();
 
 	UFUNCTION()
 	void OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
@@ -52,8 +46,6 @@ protected:
 
 	float OriginalWalkSpeed = 0.f;
 
-	UCharacterMovementComponent* CharMovementComp;
-
 	AProjectRHCharacter* OverlappingCharacter;
 
 	UPROPERTY(EditAnywhere, Category = "RHObstacle")
@@ -63,11 +55,4 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "RHObstacle")
 	bool bDestroyAfterOverlap = false;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-	
 };

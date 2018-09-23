@@ -16,6 +16,7 @@
 #include "RHPlayerState.h"
 #include "Terrain/WayGate.h"
 #include "TimerManager.h"
+#include "Character/Components/SpeedComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
@@ -58,6 +59,9 @@ AProjectRHCharacter::AProjectRHCharacter()
 	AttackZone->SetBoxExtent(FVector(600, 500, 100));
 	AttackZone->SetCollisionProfileName(TEXT("AttackZone"));
 	GetCapsuleComponent()->SetCollisionResponseToChannel(CC_ATTACKZONE, ECR_Overlap);
+
+	// Initialize speed component
+	SpeedComp = CreateDefaultSubobject<USpeedComponent>(TEXT("SpeedComp"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -215,9 +219,9 @@ void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AProjectRHCharacter, DesiredRotation);
 }
 
-float AProjectRHCharacter::GetBaseWalkSpeed() const
+USpeedComponent* AProjectRHCharacter::GetSpeedComp() const
 {
-	return BaseWalkSpeed;
+	return SpeedComp;
 }
 
 void AProjectRHCharacter::OnResetVR()

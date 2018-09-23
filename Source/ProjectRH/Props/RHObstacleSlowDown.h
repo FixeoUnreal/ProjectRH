@@ -19,9 +19,12 @@ protected:
 	void ApplyCollisionEffect() override;
 
 	UFUNCTION()
-	void EndSlowDownCharacter();
+	void OnEndSlowDownEffect();
 
 	void PlaySlowDownEffect();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlaySlowDownEffect();
 	
 protected:
 	// Based on character movement speed

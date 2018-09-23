@@ -5,33 +5,26 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include "TimerManager.h"
 #include <Kismet/GameplayStatics.h>
+#include "Character/Components/SpeedComponent.h"
 
 
 void ARHObstacleSlowDown::ApplyCollisionEffect()
 {
 	if (!ensure(OverlappingCharacter)) { return; }
-	CharMovementComp = OverlappingCharacter->GetCharacterMovement();
-	if (!ensure(CharMovementComp)) { return; }
+	USpeedComponent* CharSpeedComp = OverlappingCharacter->GetSpeedComp();
+	if(!ensure(CharSpeedComp)){ return; }
+	
+	CharSpeedComp->MulticastApplySpeedEffect(SlowingFactor, SlowDownDuration);
 
-	// So character can get back to normal speed after this
-	OriginalWalkSpeed = OverlappingCharacter->GetBaseWalkSpeed();
+	MulticastPlaySlowDownEffect();
 
-	// Applying slow down effect
-	CharMovementComp->MaxWalkSpeed *= SlowingFactor;
-
-	PlaySlowDownEffect();
-
-	GetWorldTimerManager().SetTimer(TimerHandle_SlowDownCharacter, this, &ARHObstacleSlowDown::EndSlowDownCharacter, SlowDownDuration);
+	GetWorldTimerManager().SetTimer(TimerHandle_SlowDownCharacter, this, &ARHObstacleSlowDown::OnEndSlowDownEffect, SlowDownDuration);
 }
 
-void ARHObstacleSlowDown::EndSlowDownCharacter()
+void ARHObstacleSlowDown::OnEndSlowDownEffect()
 {
-	if (!ensure(CharMovementComp)) { return; }
-	CharMovementComp->MaxWalkSpeed = OriginalWalkSpeed;
-
 	GetWorldTimerManager().ClearTimer(TimerHandle_SlowDownCharacter);
-
-	if (bDestroyAfterOverlap)
+	if (bDestroyAfterOverlap && HasAuthority())
 	{
 		Destroy();
 	}
@@ -45,5 +38,10 @@ void ARHObstacleSlowDown::PlaySlowDownEffect()
 		ParticleEffect,
 		GetActorLocation()
 	);
+}
+
+void ARHObstacleSlowDown::MulticastPlaySlowDownEffect_Implementation()
+{
+	PlaySlowDownEffect();
 }
 

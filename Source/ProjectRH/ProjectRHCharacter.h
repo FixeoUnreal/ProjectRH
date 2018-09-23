@@ -8,6 +8,7 @@
 
 class ASHPowerUp;
 class UBoxComponent;
+class USpeedComponent;
 
 UCLASS(config=Game)
 class AProjectRHCharacter : public ACharacter
@@ -98,6 +99,9 @@ protected:
 
 	float BaseWalkSpeed = 0.f;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USpeedComponent* SpeedComp;
+
 
 protected:
 	void ResetMoveForwardValue();
@@ -125,7 +129,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	float GetBaseWalkSpeed() const;
+	USpeedComponent* GetSpeedComp() const;
 
 private:
 	// Prevent character from activating the same Powerup again 
