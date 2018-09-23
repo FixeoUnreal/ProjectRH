@@ -20,9 +20,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "RHPlayerState")
 	TArray<AWayGate*> WayGateList;
 
+	static const int32 FinalPosition_None = 100;
+
 public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+	/*------------------Start Getter & Setter ------------------*/
 	int32 GetPassedWayGateCount() const;
 
 	int32 GetLapCount() const;
@@ -35,9 +38,15 @@ public:
 
 	void SetDistanceToNextWayGate(float InDistanceToNextWayGate);
 
+	UFUNCTION(BlueprintCallable, Category = "RHPlayerState")
+	int32 GetFinalPosition() const;
+
+	void SetFinalPosition(int32 InFinalPosition);
+
 	AWayGate* GetNexWayGate() const;
 
 	void SetNextWayGate(AWayGate* InWayGate);
+	/*------------------End Getter & Setter ------------------*/
 
 	void UpdateNextWayGate();
 	
@@ -50,6 +59,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
 	float DistanceToNextWayGate = 0.f;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
+	int32 FinalPosition = FinalPosition_None;
 
 	AWayGate* NextWayGate;
 

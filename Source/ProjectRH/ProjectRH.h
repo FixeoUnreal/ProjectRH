@@ -4,4 +4,4 @@
 
 #include "CoreMinimal.h"
 
-#define CC_ATTACKZONE	ECC_GameTraceChannel1
+#define CC_ATTACKZONE				ECC_GameTraceChannel1

@@ -5,6 +5,8 @@
 #include <GameFramework/Controller.h>
 #include "RHPlayerState.h"
 #include "ProjectRHCharacter.h"
+#include "RHGameState.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AFinishLapZone::AFinishLapZone()
@@ -25,12 +27,27 @@ void AFinishLapZone::OnMeshCompBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		ARHPlayerState* CharacterPlayerState = Cast<ARHPlayerState>(CharacterController->PlayerState);
 		if (!ensure(CharacterPlayerState)) { return; }
 
+		// Already finished the race
+		if(CharacterPlayerState->GetFinalPosition() != ARHPlayerState::FinalPosition_None){ return; }
+
 		int32 NewLapCount = CharacterPlayerState->GetLapCount() + 1;
 		CharacterPlayerState->SetLapCount(NewLapCount);
 
 		if (CharacterPlayerState->GetLapCount() >= MaxLapNumber)
 		{
 			// Finish the race for the overlapping player
+			ARHGameState* RHGameState = Cast<ARHGameState>(UGameplayStatics::GetGameState(this));
+			if(!ensure(RHGameState)){ return; }
+			TArray<ARHPlayerState*> PositionList = RHGameState->GetPositionList();
+			if (PositionList.Num() > 0)
+			{
+				int32 CurrentPosition = PositionList.Find(CharacterPlayerState);
+				if (CurrentPosition != INDEX_NONE)
+				{
+					CharacterPlayerState->SetFinalPosition(CurrentPosition);
+				}
+			}
+			
 			OverlappingCharacter->bInRunMode = false;
 		}
 	}

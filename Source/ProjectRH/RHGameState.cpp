@@ -74,6 +74,10 @@ void ARHGameState::UpdateScoreBoard()
 	{
 		// Sorts positions based on number of laps, passed WayGates and distances to next WayGate
 		PositionList.Sort([](const ARHPlayerState& PlayerStateA, const ARHPlayerState& PlayerStateB) {
+			if (PlayerStateA.GetFinalPosition() != PlayerStateB.GetFinalPosition())
+			{
+				return PlayerStateA.GetFinalPosition() < PlayerStateB.GetFinalPosition();
+			}
 			if (PlayerStateA.GetLapCount() != PlayerStateB.GetLapCount())
 			{
 				return PlayerStateA.GetLapCount() > PlayerStateB.GetLapCount();

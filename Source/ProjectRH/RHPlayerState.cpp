@@ -13,6 +13,7 @@ void ARHPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(ARHPlayerState, PassedWayGateCount);
 	DOREPLIFETIME(ARHPlayerState, LapCount);
 	DOREPLIFETIME(ARHPlayerState, DistanceToNextWayGate);
+	DOREPLIFETIME(ARHPlayerState, FinalPosition);
 }
 
 int32 ARHPlayerState::GetPassedWayGateCount() const
@@ -43,6 +44,16 @@ void ARHPlayerState::SetLapCount(int32 InLapCount)
 void ARHPlayerState::SetDistanceToNextWayGate(float InDistanceToNextWayGate)
 {
 	DistanceToNextWayGate = InDistanceToNextWayGate;
+}
+
+int32 ARHPlayerState::GetFinalPosition() const
+{
+	return FinalPosition;
+}
+
+void ARHPlayerState::SetFinalPosition(int32 InFinalPosition)
+{
+	FinalPosition = InFinalPosition;
 }
 
 AWayGate* ARHPlayerState::GetNexWayGate() const
