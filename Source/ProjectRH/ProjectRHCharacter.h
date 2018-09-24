@@ -4,14 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "ProjectRHCharacter.generated.h"
 
 class ASHPowerUp;
 class UBoxComponent;
 class USpeedComponent;
+class UAbilitySystemComponent;
+
+UENUM(BlueprintType) enum class AbilityInput : uint8
+{
+	NormalSkill UMETA(DisplayName = "Normal Skill"),
+	UltimateSkill UMETA(DisplayName = "Ultimate Skill"),
+	PassiveSkill UMETA(DisplayName = "Passive Skill"),
+};
 
 UCLASS(config=Game)
-class AProjectRHCharacter : public ACharacter
+class AProjectRHCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -102,6 +111,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpeedComponent* SpeedComp;
 
+	/** Our ability system */ UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true")) 
+	UAbilitySystemComponent* AbilitySystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
+	TSubclassOf<class UGameplayAbility> NormalAbility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
+	TSubclassOf<class UGameplayAbility> UltimateAbility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
+	TSubclassOf<class UGameplayAbility> PassiveAbility;
 
 protected:
 	void ResetMoveForwardValue();
@@ -130,6 +150,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	USpeedComponent* GetSpeedComp() const;
+
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void PossessedBy(AController* NewController) override;
 
 private:
 	// Prevent character from activating the same Powerup again 

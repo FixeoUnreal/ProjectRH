@@ -17,9 +17,15 @@
 #include "Terrain/WayGate.h"
 #include "TimerManager.h"
 #include "Character/Components/SpeedComponent.h"
+#include <AbilitySystemComponent.h>
+
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectRHCharacter
+
+const int32 Ability_Input_ID_NormalSkill = 0;
+const int32 Ability_Input_ID_UltimateSkill = 1;
+const int32 Ability_Input_ID_PassiveSkill = INDEX_NONE;
 
 AProjectRHCharacter::AProjectRHCharacter()
 {
@@ -63,6 +69,9 @@ AProjectRHCharacter::AProjectRHCharacter()
 	// Initialize speed component
 	SpeedComp = CreateDefaultSubobject<USpeedComponent>(TEXT("SpeedComp"));
 
+	// Initialize ability system
+	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -98,6 +107,12 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AProjectRHCharacter::OnResetVR);
+
+	// Setup input for ability system
+	AbilitySystem->BindAbilityActivationToInputComponent(
+		PlayerInputComponent, 
+		FGameplayAbiliyInputBinds("ConfirmInput", "CancelInput", "AbilityInput")
+	);
 }
 
 
@@ -180,6 +195,27 @@ void AProjectRHCharacter::BeginPlay()
 			true
 		);
 	}
+
+	// Initializing abilities
+	if (AbilitySystem)
+	{
+		if (HasAuthority())
+		{
+			if (NormalAbility)
+			{
+				AbilitySystem->GiveAbility(FGameplayAbilitySpec(NormalAbility.GetDefaultObject(), 1, Ability_Input_ID_NormalSkill));
+			}
+			if (UltimateAbility)
+			{
+				AbilitySystem->GiveAbility(FGameplayAbilitySpec(UltimateAbility.GetDefaultObject(), 1, Ability_Input_ID_UltimateSkill));
+			}
+			if (PassiveAbility)
+			{
+				AbilitySystem->GiveAbility(FGameplayAbilitySpec(PassiveAbility.GetDefaultObject(), 1, Ability_Input_ID_PassiveSkill));
+			}
+		}
+		AbilitySystem->InitAbilityActorInfo(this, this);
+	}
 	
 }
 
@@ -222,6 +258,18 @@ void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 USpeedComponent* AProjectRHCharacter::GetSpeedComp() const
 {
 	return SpeedComp;
+}
+
+UAbilitySystemComponent* AProjectRHCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
+}
+
+void AProjectRHCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AbilitySystem->RefreshAbilityActorInfo();
 }
 
 void AProjectRHCharacter::OnResetVR()
