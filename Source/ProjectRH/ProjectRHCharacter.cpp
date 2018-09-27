@@ -107,11 +107,11 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AProjectRHCharacter::OnResetVR);
-
+	
 	// Setup input for ability system
 	AbilitySystem->BindAbilityActivationToInputComponent(
 		PlayerInputComponent, 
-		FGameplayAbiliyInputBinds("ConfirmInput", "CancelInput", "AbilityInput")
+		FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput")
 	);
 }
 

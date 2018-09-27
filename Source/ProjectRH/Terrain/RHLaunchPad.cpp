@@ -18,11 +18,11 @@ ARHLaunchPad::ARHLaunchPad()
 
 	BaseComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseComp"));
 	BaseComp->SetupAttachment(RootComponent);
-	BaseComp->bGenerateOverlapEvents = false;
+	BaseComp->SetGenerateOverlapEvents(false);
 
 	SurfaceComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SurfaceComp"));
 	SurfaceComp->SetupAttachment(BaseComp);
-	SurfaceComp->bGenerateOverlapEvents = false;
+	SurfaceComp->SetGenerateOverlapEvents(false);
 
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
 	BoxComp->SetupAttachment(SurfaceComp);
