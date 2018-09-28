@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "AbilitySystem/RHAttributeSet.h"
 #include "ProjectRHCharacter.generated.h"
 
 class ASHPowerUp;
 class UBoxComponent;
 class USpeedComponent;
+class URHAbilitySystemComponent;
 class UAbilitySystemComponent;
 
 UENUM(BlueprintType) enum class AbilityInput : uint8
@@ -106,13 +108,15 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
 	float MoveRightValue = 0;
 
+	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
 	float BaseWalkSpeed = 0.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpeedComponent* SpeedComp;
 
-	/** Our ability system */ UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true")) 
-	UAbilitySystemComponent* AbilitySystem;
+	/** Our ability system */ 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true")) 
+	URHAbilitySystemComponent* AbilitySystem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TSubclassOf<class UGameplayAbility> NormalAbility;
@@ -123,6 +127,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TSubclassOf<class UGameplayAbility> PassiveAbility;
 
+	/** List of attributes modified by the ability system */
+	UPROPERTY()
+	URHAttributeSet* AttributeSet;
+
+	/** If true we have initialized our abilities */
+	UPROPERTY()
+	bool bAbilitiesInitialized = false;
+
 protected:
 	void ResetMoveForwardValue();
 
@@ -131,6 +143,27 @@ protected:
 	// Update the distance to next WayGate in PlayerState
 	UFUNCTION()
 	void UpdateDistanceToNextWayGate();
+
+	// Initializing abilities
+	void AddStartupAbilities();
+
+	/**
+	 * Called when movement speed is changed
+	 *
+	 * @param DeltaValue Change in move speed
+	 * @param EventTags The gameplay tags of the event that changed mana
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMoveSpeedChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	// Called from RPGAttributeSet, these call BP events above
+	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, AProjectRHCharacter* InstigatorCharacter, AActor* DamageCauser);
+	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+	virtual void HandleManaChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+	virtual void HandleMoveSpeedChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	// Friended to allow access to handle functions above
+	friend URHAttributeSet;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -154,6 +187,14 @@ public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void PossessedBy(AController* NewController) override;
+
+	/** Returns the character level that is passed to the ability system */
+	UFUNCTION(BlueprintCallable)
+	virtual int32 GetCharacterLevel() const;
+
+	/** Returns current movement speed */
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMoveSpeed() const;
 
 private:
 	// Prevent character from activating the same Powerup again 

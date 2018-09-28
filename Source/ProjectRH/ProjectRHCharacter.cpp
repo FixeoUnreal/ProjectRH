@@ -17,7 +17,8 @@
 #include "Terrain/WayGate.h"
 #include "TimerManager.h"
 #include "Character/Components/SpeedComponent.h"
-#include <AbilitySystemComponent.h>
+#include "AbilitySystem/RHAbilitySystemComponent.h"
+#include "AbilitySystem/RHAttributeSet.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,7 +71,11 @@ AProjectRHCharacter::AProjectRHCharacter()
 	SpeedComp = CreateDefaultSubobject<USpeedComponent>(TEXT("SpeedComp"));
 
 	// Initialize ability system
-	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AbilitySystem = CreateDefaultSubobject<URHAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AbilitySystem->SetIsReplicated(true);
+
+	// Create the attribute set, this replicates by default
+	AttributeSet = CreateDefaultSubobject<URHAttributeSet>(TEXT("AttributeSet"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -107,10 +112,10 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AProjectRHCharacter::OnResetVR);
-	
+
 	// Setup input for ability system
 	AbilitySystem->BindAbilityActivationToInputComponent(
-		PlayerInputComponent, 
+		PlayerInputComponent,
 		FGameplayAbilityInputBinds("ConfirmInput", "CancelInput", "AbilityInput")
 	);
 }
@@ -118,8 +123,8 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 void AProjectRHCharacter::ActivatePowerUp()
 {
-	if(Role < ROLE_Authority || bPowerUpActivated)
-	{ 
+	if (Role < ROLE_Authority || bPowerUpActivated)
+	{
 		return;
 	}
 	if (PowerUpInstance)
@@ -150,11 +155,11 @@ void AProjectRHCharacter::ResetMoveRightValue()
 
 void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 {
-	if(!PlayerState){ return; }
+	if (!PlayerState) { return; }
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
-	if(!ensure(RHPlayerState)){ return; }
+	if (!ensure(RHPlayerState)) { return; }
 	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
-	if(!ensure(NextWaveGate)){ return; }
+	if (!ensure(NextWaveGate)) { return; }
 
 	// Calculate the positive distance 
 	float ToNextWaveGateDistance = FMath::Abs(FVector::PointPlaneDist(
@@ -164,6 +169,32 @@ void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 	));
 
 	RHPlayerState->SetDistanceToNextWayGate(ToNextWaveGateDistance);
+}
+
+void AProjectRHCharacter::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, AProjectRHCharacter* InstigatorCharacter, AActor* DamageCauser)
+{
+
+}
+
+void AProjectRHCharacter::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
+{
+
+}
+
+void AProjectRHCharacter::HandleManaChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
+{
+
+}
+
+void AProjectRHCharacter::HandleMoveSpeedChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
+{
+	// Update the character movement's walk speed
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed * GetMoveSpeed();
+	UE_LOG(LogTemp, Warning, TEXT("Handle movement speed"));
+	if (bAbilitiesInitialized)
+	{
+		OnMoveSpeedChanged(DeltaValue, EventTags);
+	}
 }
 
 void AProjectRHCharacter::ServerActivatePowerUp_Implementation()
@@ -182,7 +213,7 @@ void AProjectRHCharacter::BeginPlay()
 	DesiredRotation = GetActorRotation();
 
 	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
-	if(!ensure(MovementComp)){ return; }
+	if (!ensure(MovementComp)) { return; }
 	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
 
 	if (HasAuthority())
@@ -196,27 +227,31 @@ void AProjectRHCharacter::BeginPlay()
 		);
 	}
 
-	// Initializing abilities
-	if (AbilitySystem)
+	AddStartupAbilities();
+
+
+}
+
+void AProjectRHCharacter::AddStartupAbilities()
+{
+	if(!ensure(AbilitySystem)){ return; }
+	if (HasAuthority())
 	{
-		if (HasAuthority())
+		if (NormalAbility)
 		{
-			if (NormalAbility)
-			{
-				AbilitySystem->GiveAbility(FGameplayAbilitySpec(NormalAbility.GetDefaultObject(), 1, Ability_Input_ID_NormalSkill));
-			}
-			if (UltimateAbility)
-			{
-				AbilitySystem->GiveAbility(FGameplayAbilitySpec(UltimateAbility.GetDefaultObject(), 1, Ability_Input_ID_UltimateSkill));
-			}
-			if (PassiveAbility)
-			{
-				AbilitySystem->GiveAbility(FGameplayAbilitySpec(PassiveAbility.GetDefaultObject(), 1, Ability_Input_ID_PassiveSkill));
-			}
+			AbilitySystem->GiveAbility(FGameplayAbilitySpec(NormalAbility.GetDefaultObject(), 1, Ability_Input_ID_NormalSkill));
 		}
-		AbilitySystem->InitAbilityActorInfo(this, this);
+		if (UltimateAbility)
+		{
+			AbilitySystem->GiveAbility(FGameplayAbilitySpec(UltimateAbility.GetDefaultObject(), 1, Ability_Input_ID_UltimateSkill));
+		}
+		if (PassiveAbility)
+		{
+			AbilitySystem->GiveAbility(FGameplayAbilitySpec(PassiveAbility.GetDefaultObject(), 1, Ability_Input_ID_PassiveSkill));
+		}
 	}
-	
+	AbilitySystem->InitAbilityActorInfo(this, this);
+	bAbilitiesInitialized = true;
 }
 
 void AProjectRHCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -249,7 +284,7 @@ UBoxComponent* AProjectRHCharacter::GetAttackZone() const
 void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
+
 	DOREPLIFETIME(AProjectRHCharacter, PowerUpInstance);
 	DOREPLIFETIME(AProjectRHCharacter, bInRunMode);
 	DOREPLIFETIME(AProjectRHCharacter, DesiredRotation);
@@ -272,6 +307,17 @@ void AProjectRHCharacter::PossessedBy(AController* NewController)
 	AbilitySystem->RefreshAbilityActorInfo();
 }
 
+int32 AProjectRHCharacter::GetCharacterLevel() const
+{
+	// TODO if level implemented
+	return 1;
+}
+
+float AProjectRHCharacter::GetMoveSpeed() const
+{
+	return AttributeSet->GetMoveSpeed();
+}
+
 void AProjectRHCharacter::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
@@ -279,12 +325,12 @@ void AProjectRHCharacter::OnResetVR()
 
 void AProjectRHCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void AProjectRHCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void AProjectRHCharacter::TurnAtRate(float Rate)
@@ -326,12 +372,12 @@ void AProjectRHCharacter::MoveForward(float Value)
 
 void AProjectRHCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if ((Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		FVector Direction;
 		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
