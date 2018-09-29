@@ -210,7 +210,6 @@ bool AProjectRHCharacter::ServerActivatePowerUp_Validate()
 void AProjectRHCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	DesiredRotation = GetActorRotation();
 
 	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
 	if (!ensure(MovementComp)) { return; }
@@ -287,7 +286,7 @@ void AProjectRHCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(AProjectRHCharacter, PowerUpInstance);
 	DOREPLIFETIME(AProjectRHCharacter, bInRunMode);
-	DOREPLIFETIME(AProjectRHCharacter, DesiredRotation);
+	DOREPLIFETIME(AProjectRHCharacter, DesiredForwardVector);
 }
 
 USpeedComponent* AProjectRHCharacter::GetSpeedComp() const
@@ -357,7 +356,8 @@ void AProjectRHCharacter::MoveForward(float Value)
 		FVector Direction;
 		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
 		{
-			Direction = DesiredRotation.Vector().ToOrientationQuat().GetUpVector();
+			//Direction = DesiredRotation.Vector().ToOrientationQuat().GetUpVector();
+			Direction = DesiredForwardVector.UpVector;
 		}
 		else
 		{
@@ -382,7 +382,8 @@ void AProjectRHCharacter::MoveRight(float Value)
 		FVector Direction;
 		if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
 		{
-			Direction = DesiredRotation.Vector().ToOrientationQuat().GetRightVector();
+			//Direction = DesiredRotation.Vector().ToOrientationQuat().GetRightVector();
+			Direction = DesiredForwardVector.RightVector;
 		}
 		else
 		{

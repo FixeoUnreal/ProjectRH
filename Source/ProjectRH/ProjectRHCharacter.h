@@ -100,7 +100,7 @@ protected:
 	UBoxComponent* AttackZone;
 
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHCharacter")
-	FRotator DesiredRotation;
+	FVector DesiredForwardVector;
 
 	UPROPERTY(BlueprintReadOnly, Category = "RHCharacter")
 	float MoveForwardValue = 0;
