@@ -33,7 +33,7 @@ void AWayGate::OnMeshCompBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	if (HasAuthority())
 	{
 		ACharacter* OverlappingCharacter = Cast<ACharacter>(OtherActor);
-		if(!ensure(OverlappingCharacter)){ return; }
+		if(!OverlappingCharacter){ return; }
 		AController* CharacterController = OverlappingCharacter->GetController();
 		if(!ensure(CharacterController)){ return; }
 		ARHPlayerState* CharacterPlayerState = Cast<ARHPlayerState>(CharacterController->PlayerState);
