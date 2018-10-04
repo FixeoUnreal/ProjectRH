@@ -17,7 +17,9 @@ public class ProjectRH : ModuleRules
             "UMG",
             "GameplayAbilities",
             "GameplayTags",
-            "GameplayTasks"
+            "GameplayTasks",
+            "OnlineSubsystem",
+            "OnlineSubsystemSteam"
         });
 	}
 }

@@ -11,13 +11,18 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"GameplayAbilities",
-				"CoreUObject"
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
 			"Enabled": true
 		}
 	]

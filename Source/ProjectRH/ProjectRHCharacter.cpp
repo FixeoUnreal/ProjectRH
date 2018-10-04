@@ -215,7 +215,7 @@ void AProjectRHCharacter::BeginPlay()
 	if (!ensure(MovementComp)) { return; }
 	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
 
-	if (HasAuthority())
+	if (bInRunMode && HasAuthority())
 	{
 		GetWorldTimerManager().SetTimer(
 			TimerHandle_UpdateDistanceToNextWaveGate,
