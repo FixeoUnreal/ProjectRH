@@ -1,9 +1,9 @@
 // Copyright 2018 , Hoang Giang Phi, All Rights Reserved.
 
 #include "RHAbilitySystemComponent.h"
-#include "ProjectRHCharacter.h"
 #include "RHGameplayAbility.h"
 #include "AbilitySystemGlobals.h"
+#include "Character/ProjectRHCharacter.h"
 
 URHAbilitySystemComponent::URHAbilitySystemComponent() {}
 

@@ -1,11 +1,11 @@
 // Copyright 2018 , Hoang Giang Phi, All Rights Reserved.
 
 #include "RHObstacleSlowDown.h"
-#include "ProjectRHCharacter.h"
 #include <GameFramework/CharacterMovementComponent.h>
 #include "TimerManager.h"
 #include <Kismet/GameplayStatics.h>
 #include "Character/Components/SpeedComponent.h"
+#include "Character/ProjectRHCharacter.h"
 
 
 void ARHObstacleSlowDown::ApplyCollisionEffect()

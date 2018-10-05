@@ -3,7 +3,7 @@
 #include "RHGameplayAbility.h"
 #include "RHAbilitySystemComponent.h"
 #include "RHTargetType.h"
-#include "ProjectRHCharacter.h"
+#include "Character/ProjectRHCharacter.h"
 
 URHGameplayAbility::URHGameplayAbility() {}
 

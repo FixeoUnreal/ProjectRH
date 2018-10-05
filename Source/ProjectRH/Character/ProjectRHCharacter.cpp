@@ -13,7 +13,7 @@
 #include <UnrealNetwork.h>
 #include <Components/BoxComponent.h>
 #include "ProjectRH.h"
-#include "RHPlayerState.h"
+#include "Replication/RHPlayerState.h"
 #include "Terrain/WayGate.h"
 #include "TimerManager.h"
 #include "Character/Components/SpeedComponent.h"

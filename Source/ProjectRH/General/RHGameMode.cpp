@@ -1,8 +1,8 @@
 // Copyright 2018 , Hoang Giang Phi, All Rights Reserved.
 
 #include "RHGameMode.h"
-#include "RHGameState.h"
-#include "RHPlayerState.h"
+#include "Replication/RHPlayerState.h"
+#include "Replication/RHGameState.h"
 
 void ARHGameMode::PostLogin(APlayerController* NewPlayer)
 {

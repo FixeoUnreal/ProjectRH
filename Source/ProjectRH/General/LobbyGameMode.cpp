@@ -4,9 +4,9 @@
 #include <Engine/World.h>
 #include "TimerManager.h"
 #include <OnlineSessionInterface.h>
-#include "RHGameInstance.h"
-#include "ProjectRHCharacter.h"
+#include "Character/ProjectRHCharacter.h"
 #include "Character/RHPlayerController.h"
+#include "Replication/RHGameInstance.h"
 
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)

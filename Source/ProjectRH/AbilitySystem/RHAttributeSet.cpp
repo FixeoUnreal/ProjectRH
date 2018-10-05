@@ -4,7 +4,7 @@
 
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
-#include "ProjectRHCharacter.h"
+#include "Character/ProjectRHCharacter.h"
 #include <UnrealNetwork.h>
 #include "GameFramework/PlayerController.h"
 

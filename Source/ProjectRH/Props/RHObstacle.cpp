@@ -4,8 +4,8 @@
 #include <Components/StaticMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Components/BoxComponent.h>
-#include "ProjectRHCharacter.h"
 #include <Components/SceneComponent.h>
+#include "Character/ProjectRHCharacter.h"
 
 
 // Sets default values

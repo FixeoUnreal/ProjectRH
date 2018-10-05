@@ -2,7 +2,7 @@
 
 #include "RHTargetType.h"
 #include "RHGameplayAbility.h"
-#include "ProjectRHCharacter.h"
+#include "Character/ProjectRHCharacter.h"
 
 void URHTargetType::GetTargets_Implementation(AProjectRHCharacter* TargetingCharacter, AActor* TargetingActor, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {

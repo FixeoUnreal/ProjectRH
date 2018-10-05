@@ -6,11 +6,11 @@
 #include <Components/StaticMeshComponent.h>
 #include <Components/PointLightComponent.h>
 #include <GameFramework/RotatingMovementComponent.h>
-#include "ProjectRHCharacter.h"
 #include <Kismet/GameplayStatics.h>
 #include "Components/SkeletalMeshComponent.h"
 #include <Particles/ParticleSystemComponent.h>
 #include "Particles/ParticleSystem.h"
+#include "Character/ProjectRHCharacter.h"
 
 // Sets default values
 ASHPowerUp::ASHPowerUp()

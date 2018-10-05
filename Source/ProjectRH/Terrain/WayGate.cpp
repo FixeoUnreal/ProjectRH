@@ -4,7 +4,7 @@
 #include <Components/StaticMeshComponent.h>
 #include <GameFramework/Controller.h>
 #include <GameFramework/Character.h>
-#include "RHPlayerState.h"
+#include "Replication/RHPlayerState.h"
 
 
 // Sets default values
