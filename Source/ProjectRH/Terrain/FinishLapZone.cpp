@@ -3,9 +3,9 @@
 #include "FinishLapZone.h"
 #include <Components/StaticMeshComponent.h>
 #include <GameFramework/Controller.h>
-#include "RHPlayerState.h"
-#include "ProjectRHCharacter.h"
-#include "RHGameState.h"
+#include "Replication/RHPlayerState.h"
+#include "Character/ProjectRHCharacter.h"
+#include "Replication/RHGameState.h"
 #include <Kismet/GameplayStatics.h>
 
 // Sets default values
@@ -21,7 +21,7 @@ void AFinishLapZone::OnMeshCompBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	if (HasAuthority())
 	{
 		AProjectRHCharacter* OverlappingCharacter = Cast<AProjectRHCharacter>(OtherActor);
-		if (!ensure(OverlappingCharacter)) { return; }
+		if (!OverlappingCharacter) { return; }
 		AController* CharacterController = OverlappingCharacter->GetController();
 		if (!ensure(CharacterController)) { return; }
 		ARHPlayerState* CharacterPlayerState = Cast<ARHPlayerState>(CharacterController->PlayerState);
