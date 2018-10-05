@@ -5,12 +5,25 @@
 #include "TimerManager.h"
 #include <OnlineSessionInterface.h>
 #include "RHGameInstance.h"
+#include "ProjectRHCharacter.h"
+#include "Character/RHPlayerController.h"
 
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	PlayerCount++;
+
+	ARHPlayerController* RHPC = Cast<ARHPlayerController>(NewPlayer);
+	if (RHPC)
+	{
+		RHPC->bInLobby = true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to get RHPlayerController!"));
+	}
+
 	if (PlayerCount >= 2)
 	{
 		FTimerHandle TimerHandle_StartSession;
@@ -23,6 +36,11 @@ void ALobbyGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 	PlayerCount--;
+}
+
+void ALobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ALobbyGameMode::StartGame()

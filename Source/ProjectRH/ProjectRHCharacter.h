@@ -48,7 +48,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "RHCharacter")
 	bool bInRunMode = false;
 
-
 protected:
 
 	/** Resets HMD orientation in VR. */

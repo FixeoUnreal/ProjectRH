@@ -49,6 +49,10 @@ public:
 	/*------------------End Getter & Setter ------------------*/
 
 	void UpdateNextWayGate();
+
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHCharacter")
+	bool bInLobby = false;
+
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
@@ -60,6 +64,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
 	float DistanceToNextWayGate = 0.f;
 
+	// Position after crossing finish line
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
 	int32 FinalPosition = FinalPosition_None;
 

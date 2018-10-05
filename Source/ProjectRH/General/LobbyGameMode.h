@@ -19,6 +19,8 @@ public:
 
 	void Logout(AController* Exiting) override;
 
+	virtual void BeginPlay() override;
+
 private:
 	uint32 PlayerCount = 0;
 

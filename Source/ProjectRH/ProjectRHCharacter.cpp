@@ -19,6 +19,7 @@
 #include "Character/Components/SpeedComponent.h"
 #include "AbilitySystem/RHAbilitySystemComponent.h"
 #include "AbilitySystem/RHAttributeSet.h"
+#include "Character/RHPlayerController.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -157,7 +158,7 @@ void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 {
 	if (!PlayerState) { return; }
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
-	if (!ensure(RHPlayerState)) { return; }
+	if (!RHPlayerState) { return; }
 	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
 	if (!ensure(NextWaveGate)) { return; }
 
@@ -215,7 +216,15 @@ void AProjectRHCharacter::BeginPlay()
 	if (!ensure(MovementComp)) { return; }
 	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
 
-	if (bInRunMode && HasAuthority())
+	// No need to update position in lobby
+	ARHPlayerController* RHPC = Cast<ARHPlayerController>(Controller);
+	if (RHPC && RHPC->bInLobby)
+	{
+		bInRunMode = false;
+		return;
+	}
+
+	if (HasAuthority())
 	{
 		GetWorldTimerManager().SetTimer(
 			TimerHandle_UpdateDistanceToNextWaveGate,

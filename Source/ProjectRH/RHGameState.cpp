@@ -108,7 +108,7 @@ TArray<ARHPlayerState*> ARHGameState::GetPositionList() const
 void ARHGameState::AddNewPlayerToScoreBoard(ARHPlayerState* RHPlayerState)
 {
 	// Populates PlayerState with array of WayGates in numerical order
-	if(!ensure(RHPlayerState)){ return; }
+	if(!RHPlayerState){ return; }
 	UE_LOG(LogTemp, Warning, TEXT("Enter ADD"));
 
 	// Already in list

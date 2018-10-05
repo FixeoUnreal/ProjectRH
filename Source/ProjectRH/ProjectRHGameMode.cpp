@@ -3,6 +3,7 @@
 #include "ProjectRHGameMode.h"
 #include "ProjectRHCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Character/RHPlayerController.h"
 
 AProjectRHGameMode::AProjectRHGameMode()
 {
@@ -12,4 +13,6 @@ AProjectRHGameMode::AProjectRHGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	PlayerControllerClass = ARHPlayerController::StaticClass();
 }
