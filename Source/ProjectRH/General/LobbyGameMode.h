@@ -21,6 +21,9 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable, Category = "LobbyGameMode")
+	void TravelToSelectedMap(const FString MapPath);
+
 private:
 	uint32 PlayerCount = 0;
 

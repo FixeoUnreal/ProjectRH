@@ -24,12 +24,12 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		UE_LOG(LogTemp, Warning, TEXT("Failed to get RHPlayerController!"));
 	}
 
-	if (PlayerCount >= 2)
+	/*if (PlayerCount >= 2)
 	{
 		FTimerHandle TimerHandle_StartSession;
 		GetWorldTimerManager().SetTimer(TimerHandle_StartSession, this, &ALobbyGameMode::StartGame, 60.f);
 
-	}
+	}*/
 }
 
 void ALobbyGameMode::Logout(AController* Exiting)
@@ -43,7 +43,7 @@ void ALobbyGameMode::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ALobbyGameMode::StartGame()
+void ALobbyGameMode::TravelToSelectedMap(const FString MapPath)
 {
 	// Stop players from joining
 	URHGameInstance* GameInstance = Cast<URHGameInstance>(GetGameInstance());
@@ -54,7 +54,12 @@ void ALobbyGameMode::StartGame()
 	if (!ensure(World)) { return; }
 
 	bUseSeamlessTravel = true;
-	World->ServerTravel("/Game/Maps/Test_Map?listen");
+	World->ServerTravel(MapPath);
+}
+
+void ALobbyGameMode::StartGame()
+{
+	TravelToSelectedMap("/Game/Maps/Test_Map?listen");
 }
 
 
