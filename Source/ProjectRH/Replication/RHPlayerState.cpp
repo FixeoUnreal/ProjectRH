@@ -14,6 +14,7 @@ void ARHPlayerState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & Ou
 	DOREPLIFETIME(ARHPlayerState, LapCount);
 	DOREPLIFETIME(ARHPlayerState, DistanceToNextWayGate);
 	DOREPLIFETIME(ARHPlayerState, FinalPosition);
+	DOREPLIFETIME(ARHPlayerState, bIsReady);
 }
 
 int32 ARHPlayerState::GetPassedWayGateCount() const

@@ -20,6 +20,8 @@
 #include "AbilitySystem/RHAbilitySystemComponent.h"
 #include "AbilitySystem/RHAttributeSet.h"
 #include "Character/RHPlayerController.h"
+#include "General/LobbyGameMode.h"
+#include <Kismet/GameplayStatics.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -217,15 +219,19 @@ void AProjectRHCharacter::BeginPlay()
 	BaseWalkSpeed = MovementComp->MaxWalkSpeed;
 
 	// No need to update position in lobby
-	ARHPlayerController* RHPC = Cast<ARHPlayerController>(Controller);
-	if (RHPC && RHPC->bInLobby)
+	if (HasAuthority())
 	{
-		bInRunMode = false;
-		return;
+		ALobbyGameMode* LobbyGM = Cast<ALobbyGameMode>(UGameplayStatics::GetGameMode(this));
+		if (LobbyGM)
+		{
+			bInRunMode = false;
+			return;
+		}
 	}
 
 	if (HasAuthority())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Update distance"));
 		GetWorldTimerManager().SetTimer(
 			TimerHandle_UpdateDistanceToNextWaveGate,
 			this,
@@ -242,7 +248,7 @@ void AProjectRHCharacter::BeginPlay()
 
 void AProjectRHCharacter::AddStartupAbilities()
 {
-	if(!ensure(AbilitySystem)){ return; }
+	if (!ensure(AbilitySystem)) { return; }
 	if (HasAuthority())
 	{
 		if (NormalAbility)

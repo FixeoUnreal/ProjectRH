@@ -4,8 +4,6 @@
 #include <Engine/World.h>
 #include "TimerManager.h"
 #include <OnlineSessionInterface.h>
-#include "Character/ProjectRHCharacter.h"
-#include "Character/RHPlayerController.h"
 #include "Replication/RHGameInstance.h"
 
 
@@ -13,16 +11,6 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	PlayerCount++;
-
-	ARHPlayerController* RHPC = Cast<ARHPlayerController>(NewPlayer);
-	if (RHPC)
-	{
-		RHPC->bInLobby = true;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to get RHPlayerController!"));
-	}
 
 	/*if (PlayerCount >= 2)
 	{

@@ -50,9 +50,8 @@ public:
 
 	void UpdateNextWayGate();
 
-	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHCharacter")
-	bool bInLobby = false;
-
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHPlayerState")
+	bool bIsReady = false;
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")

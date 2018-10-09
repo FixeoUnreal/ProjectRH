@@ -15,8 +15,6 @@ class PROJECTRH_API ARHPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHCharacter")
-	bool bInLobby = false;
 	
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
