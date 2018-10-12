@@ -12,6 +12,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	PlayerCount++;
 
+	AllControllers.Add(NewPlayer);
+
 	/*if (PlayerCount >= 2)
 	{
 		FTimerHandle TimerHandle_StartSession;
@@ -24,6 +26,8 @@ void ALobbyGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 	PlayerCount--;
+
+	AllControllers.Remove(Exiting);
 }
 
 void ALobbyGameMode::BeginPlay()

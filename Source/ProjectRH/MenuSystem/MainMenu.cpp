@@ -17,7 +17,7 @@ const FString& SEARCH_NOT_FOUND_TEXT = TEXT("No server found!");
 
 UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 {
-	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/UI/WBP_ServerRow"));
+	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/UI/Menu/WBP_ServerRow"));
 	if (!ensure(ServerRowBPClass.Class)) { return; }
 	ServerRowClass = ServerRowBPClass.Class;
 }

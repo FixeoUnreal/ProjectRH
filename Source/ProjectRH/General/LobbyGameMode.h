@@ -24,6 +24,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "LobbyGameMode")
 	void TravelToSelectedMap(const FString MapPath);
 
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "LobbyGameMode")
+	TArray<AController*> AllControllers;
+
 private:
 	uint32 PlayerCount = 0;
 
