@@ -59,6 +59,10 @@ void ASHPowerUp::OnRep_PowerupAcquired()
 		FTimerHandle TimerHandle_FinishEffect;
 		GetWorldTimerManager().SetTimer(TimerHandle_FinishEffect, this, &ASHPowerUp::EndAcquireEffect, 2.f);
 	}
+	if (SoundEffect)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, SoundEffect, GetActorLocation());
+	}
 	MeshComp->SetVisibility(false, true);
 }
 

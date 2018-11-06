@@ -69,6 +69,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Powerup")
 	UTexture2D* PowerupUIImage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+	USoundBase* SoundEffect;
+
 public:
 	void AcquirePowerup(AActor* ActivateFor);
 

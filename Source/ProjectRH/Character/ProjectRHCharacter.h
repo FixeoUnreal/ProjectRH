@@ -195,6 +195,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual float GetMoveSpeed() const;
 
+	/** Set Powerup internal state to allow player to activate it again*/
+	UFUNCTION(BlueprintCallable)
+	void SetPowerUpActivated(bool bInPowerUpActivated);
+
 private:
 	// Prevent character from activating the same Powerup again 
 	bool bPowerUpActivated = false;

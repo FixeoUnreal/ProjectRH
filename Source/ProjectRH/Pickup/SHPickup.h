@@ -32,7 +32,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UDecalComponent* DecalComp;
 
-	UPROPERTY(EditInstanceOnly, Category = "PickupActor")
+	UPROPERTY(EditAnywhere, Category = "PickupActor")
 	TSubclassOf<ASHPowerUp> PowerupClass;
 
 	ASHPowerUp* PowerupInstance;

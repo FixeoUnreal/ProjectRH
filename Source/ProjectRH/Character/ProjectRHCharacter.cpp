@@ -126,14 +126,16 @@ void AProjectRHCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 void AProjectRHCharacter::ActivatePowerUp()
 {
+	UE_LOG(LogTemp, Warning, TEXT("activated: %d"), bPowerUpActivated);
 	if (Role < ROLE_Authority || bPowerUpActivated)
 	{
 		return;
 	}
 	if (PowerUpInstance)
 	{
-		PowerUpInstance->Activate();
 		bPowerUpActivated = true;
+		PowerUpInstance->Activate();
+		UE_LOG(LogTemp, Warning, TEXT("Powerup activate!"));
 	}
 	else
 	{
@@ -162,7 +164,7 @@ void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
 	if (!RHPlayerState) { return; }
 	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
-	if (!ensure(NextWaveGate)) { return; }
+	if (NextWaveGate) { return; }
 
 	// Calculate the positive distance 
 	float ToNextWaveGateDistance = FMath::Abs(FVector::PointPlaneDist(
@@ -330,6 +332,12 @@ int32 AProjectRHCharacter::GetCharacterLevel() const
 float AProjectRHCharacter::GetMoveSpeed() const
 {
 	return AttributeSet->GetMoveSpeed();
+}
+
+void AProjectRHCharacter::SetPowerUpActivated(bool bInPowerUpActivated)
+{
+	bPowerUpActivated = bInPowerUpActivated;
+	UE_LOG(LogTemp, Warning, TEXT("After set activated: %d"), bPowerUpActivated);
 }
 
 void AProjectRHCharacter::OnResetVR()
