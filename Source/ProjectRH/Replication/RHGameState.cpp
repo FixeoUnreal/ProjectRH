@@ -51,6 +51,7 @@ void ARHGameState::InitializeScoreBoard()
 	// and populates score board
 	for (APlayerState* PlayerState : PlayerArray)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Player state name: %s , Inactive: %d"), *PlayerState->GetName(), PlayerState->bIsInactive);
 		ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
 		
 		AddNewPlayerToScoreBoard(RHPlayerState);
