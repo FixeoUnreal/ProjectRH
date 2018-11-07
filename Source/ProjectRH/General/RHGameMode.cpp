@@ -15,7 +15,7 @@ void ARHGameMode::PostLogin(APlayerController* NewPlayer)
 	if(!ensure(RHGameState)){ return; }
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(NewPlayer->PlayerState);
 	if(!ensure(RHPlayerState)){ return; }
-	
+	UE_LOG(LogTemp, Warning, TEXT("Post login"));
 	RHGameState->AddNewPlayerToScoreBoard(RHPlayerState);
 }
 

@@ -119,6 +119,6 @@ void ARHGameState::AddNewPlayerToScoreBoard(ARHPlayerState* RHPlayerState)
 		RHPlayerState->WayGateList = WayGateList;
 		PositionList.Add(RHPlayerState);
 		RHPlayerState->SetNextWayGate(WayGateList[0]);
-		UE_LOG(LogTemp, Warning, TEXT("After ADD"));
+		UE_LOG(LogTemp, Warning, TEXT("After ADD: %s"), *WayGateList[0]->GetName());
 	}
 }

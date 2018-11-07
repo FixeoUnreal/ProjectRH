@@ -164,7 +164,8 @@ void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 	ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
 	if (!RHPlayerState) { return; }
 	AWayGate* NextWaveGate = RHPlayerState->GetNexWayGate();
-	if (NextWaveGate) { return; }
+	if (!NextWaveGate) { return; }
+	UE_LOG(LogTemp, Warning, TEXT("After nullptr check"));
 
 	// Calculate the positive distance 
 	float ToNextWaveGateDistance = FMath::Abs(FVector::PointPlaneDist(
@@ -174,6 +175,7 @@ void AProjectRHCharacter::UpdateDistanceToNextWayGate()
 	));
 
 	RHPlayerState->SetDistanceToNextWayGate(ToNextWaveGateDistance);
+	UE_LOG(LogTemp, Warning, TEXT("%s Distance: %f"), *GetName(), ToNextWaveGateDistance);
 }
 
 void AProjectRHCharacter::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, AProjectRHCharacter* InstigatorCharacter, AActor* DamageCauser)
