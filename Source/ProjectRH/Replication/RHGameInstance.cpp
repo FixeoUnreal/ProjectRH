@@ -160,6 +160,11 @@ void URHGameInstance::ExitMenu()
 	CurrentMenu->TearDown();
 }
 
+void URHGameInstance::OpenMainMenuWithBP()
+{
+	OpenMainMenu();
+}
+
 void URHGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid())

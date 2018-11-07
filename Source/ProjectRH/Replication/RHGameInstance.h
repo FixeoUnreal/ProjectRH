@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PPGameInstance")
 	void ExitMenu();
 
+	UFUNCTION(BlueprintCallable, Category = "PPGameInstance")
+	void OpenMainMenuWithBP();
+
 	void StartSession();
 
 protected:

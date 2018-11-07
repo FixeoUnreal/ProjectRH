@@ -52,6 +52,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHPlayerState")
 	bool bIsReady = false;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "RHPlayerState")
+	bool bIsHost = false;
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "RHPlayerState")
