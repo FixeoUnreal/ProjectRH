@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SHPowerUp.generated.h"
+#include "RHPowerUp.generated.h"
 
 class USceneComponent;
 class UStaticMeshComponent;
@@ -16,13 +16,13 @@ class AProjectRHCharacter;
 class UTexture2D;
 
 UCLASS()
-class PROJECTRH_API ASHPowerUp : public AActor
+class PROJECTRH_API ARHPowerUp : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASHPowerUp();
+	ARHPowerUp();
 
 protected:
 	// Called when the game starts or when spawned

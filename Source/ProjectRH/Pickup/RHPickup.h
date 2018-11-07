@@ -4,21 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SHPickup.generated.h"
+#include "RHPickup.generated.h"
 
 class USphereComponent;
 class UDecalComponent;
 class ASPowerupActor;
-class ASHPowerUp;
+class ARHPowerUp;
 
 UCLASS()
-class PROJECTRH_API ASHPickup : public AActor
+class PROJECTRH_API ARHPickup : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASHPickup();
+	ARHPickup();
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,9 +33,9 @@ protected:
 	UDecalComponent* DecalComp;
 
 	UPROPERTY(EditAnywhere, Category = "PickupActor")
-	TSubclassOf<ASHPowerUp> PowerupClass;
+	TSubclassOf<ARHPowerUp> PowerupClass;
 
-	ASHPowerUp* PowerupInstance;
+	ARHPowerUp* PowerupInstance;
 
 	UPROPERTY(EditInstanceOnly, Category = "PickupActor")
 	float CooldownDuration;

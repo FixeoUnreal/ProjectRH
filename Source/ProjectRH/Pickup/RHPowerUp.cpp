@@ -1,6 +1,6 @@
 // Copyright 2018 , Hoang Giang Phi, All Rights Reserved.
 
-#include "ProjectRH/Pickup/SHPowerUp.h"
+#include "ProjectRH/Pickup/RHPowerUp.h"
 #include "TimerManager.h"
 #include <UnrealNetwork.h>
 #include <Components/StaticMeshComponent.h>
@@ -13,7 +13,7 @@
 #include "Character/ProjectRHCharacter.h"
 
 // Sets default values
-ASHPowerUp::ASHPowerUp()
+ARHPowerUp::ARHPowerUp()
 {
 	// Initializes component
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
@@ -38,14 +38,14 @@ ASHPowerUp::ASHPowerUp()
 }
 
 // Called when the game starts or when spawned
-void ASHPowerUp::BeginPlay()
+void ARHPowerUp::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
 
-void ASHPowerUp::OnRep_PowerupAcquired()
+void ARHPowerUp::OnRep_PowerupAcquired()
 {
 	OnPowerupStateChanged(bIsPowerupAcquired);
 
@@ -57,7 +57,7 @@ void ASHPowerUp::OnRep_PowerupAcquired()
 			GetActorTransform()
 		);
 		FTimerHandle TimerHandle_FinishEffect;
-		GetWorldTimerManager().SetTimer(TimerHandle_FinishEffect, this, &ASHPowerUp::EndAcquireEffect, 2.f);
+		GetWorldTimerManager().SetTimer(TimerHandle_FinishEffect, this, &ARHPowerUp::EndAcquireEffect, 2.f);
 	}
 	if (SoundEffect)
 	{
@@ -66,12 +66,12 @@ void ASHPowerUp::OnRep_PowerupAcquired()
 	MeshComp->SetVisibility(false, true);
 }
 
-void ASHPowerUp::MulticastOnActivate_Implementation()
+void ARHPowerUp::MulticastOnActivate_Implementation()
 {
 	OnActivate();
 }
 
-void ASHPowerUp::EndAcquireEffect()
+void ARHPowerUp::EndAcquireEffect()
 {
 	if (AcquireEffectComp)
 	{
@@ -79,7 +79,7 @@ void ASHPowerUp::EndAcquireEffect()
 	}
 }
 
-void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
+void ARHPowerUp::AcquirePowerup(AActor* ActivateFor)
 {
 	if (Role == ROLE_Authority)
 	{
@@ -97,15 +97,15 @@ void ASHPowerUp::AcquirePowerup(AActor* ActivateFor)
 
 }
 
-void ASHPowerUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ARHPowerUp::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASHPowerUp, bIsPowerupAcquired);
-	DOREPLIFETIME(ASHPowerUp, OwningCharacter);
+	DOREPLIFETIME(ARHPowerUp, bIsPowerupAcquired);
+	DOREPLIFETIME(ARHPowerUp, OwningCharacter);
 }
 
-void ASHPowerUp::Activate()
+void ARHPowerUp::Activate()
 {
 	if (OwningCharacter)
 	{

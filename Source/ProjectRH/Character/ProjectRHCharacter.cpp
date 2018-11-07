@@ -9,7 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Engine/World.h"
-#include "Pickup/SHPowerUp.h"
+#include "Pickup/RHPowerUp.h"
 #include <UnrealNetwork.h>
 #include <Components/BoxComponent.h>
 #include "ProjectRH.h"
@@ -280,7 +280,7 @@ void AProjectRHCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-void AProjectRHCharacter::SetPowerUp(ASHPowerUp* PowerUpToSet)
+void AProjectRHCharacter::SetPowerUp(ARHPowerUp* PowerUpToSet)
 {
 	// Clear unused PowerUp. No need to call after activation because it will destroy itself
 	if (PowerUpInstance && !bPowerUpActivated)

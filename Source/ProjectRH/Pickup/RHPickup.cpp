@@ -1,14 +1,14 @@
 // Copyright 2018 , Hoang Giang Phi, All Rights Reserved.
 
-#include "ProjectRH/Pickup/SHPickup.h"
+#include "ProjectRH/Pickup/RHPickup.h"
 #include <Components/SphereComponent.h>
 #include <Components/DecalComponent.h>
 #include <Engine/World.h>
 #include "TimerManager.h"
-#include "SHPowerUp.h"
+#include "RHPowerUp.h"
 
 // Sets default values
-ASHPickup::ASHPickup()
+ARHPickup::ARHPickup()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComp->SetSphereRadius(75.f);
@@ -25,7 +25,7 @@ ASHPickup::ASHPickup()
 }
 
 // Called when the game starts or when spawned
-void ASHPickup::BeginPlay()
+void ARHPickup::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -35,7 +35,7 @@ void ASHPickup::BeginPlay()
 	}
 }
 
-void ASHPickup::Respawn()
+void ARHPickup::Respawn()
 {
 	if (!PowerupClass)
 	{
@@ -46,11 +46,11 @@ void ASHPickup::Respawn()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	PowerupInstance = GetWorld()->SpawnActor<ASHPowerUp>(PowerupClass, GetTransform(), SpawnParams);
+	PowerupInstance = GetWorld()->SpawnActor<ARHPowerUp>(PowerupClass, GetTransform(), SpawnParams);
 
 }
 
-void ASHPickup::NotifyActorBeginOverlap(AActor* OtherActor)
+void ARHPickup::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
@@ -60,7 +60,7 @@ void ASHPickup::NotifyActorBeginOverlap(AActor* OtherActor)
 		PowerupInstance = nullptr;
 
 		// Set timer to respawn
-		GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASHPickup::Respawn, CooldownDuration);
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ARHPickup::Respawn, CooldownDuration);
 
 	}
 }

@@ -8,7 +8,7 @@
 #include "AbilitySystem/RHAttributeSet.h"
 #include "ProjectRHCharacter.generated.h"
 
-class ASHPowerUp;
+class ARHPowerUp;
 class UBoxComponent;
 class USpeedComponent;
 class URHAbilitySystemComponent;
@@ -92,7 +92,7 @@ protected:
 
 protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Powerup")
-	ASHPowerUp* PowerUpInstance;
+	ARHPowerUp* PowerUpInstance;
 
 	// In zone overlapping actors can be "attacked" by this character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -174,7 +174,7 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	void SetPowerUp(ASHPowerUp* PowerUpToSet);
+	void SetPowerUp(ARHPowerUp* PowerUpToSet);
 
 	UFUNCTION(BlueprintPure, Category = "RHCharacter")
 	UBoxComponent* GetAttackZone() const;
