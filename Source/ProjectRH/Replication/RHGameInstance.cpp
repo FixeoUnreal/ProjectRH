@@ -104,6 +104,7 @@ void URHGameInstance::Join(uint32 Index)
 		CurrentMenu->TearDown();
 	}
 
+	// Destroy session if already existed
 	if (SessionInterface.IsValid())
 	{
 		auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
@@ -165,6 +166,13 @@ void URHGameInstance::OpenMainMenuWithBP()
 	OpenMainMenu();
 }
 
+FString URHGameInstance::GetServerName() const
+{
+	FString ServerName;
+	SessionInterface->GetSessionSettings(SESSION_NAME)->Get(SESSION_SETTINGS_KEY_SERVER_NAME, ServerName);
+	return ServerName;
+}
+
 void URHGameInstance::StartSession()
 {
 	if (SessionInterface.IsValid())
@@ -221,6 +229,8 @@ void URHGameInstance::OnDestroySessionCompleted(FName SessionName, bool Success)
 void URHGameInstance::OnFindSessionsCompleted(bool bWasSuccessful)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Find sessions completed"));
+
+	// Pass data of all found "servers" to main menu
 	if (bWasSuccessful && SessionSearch.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Find sessions successful"));

@@ -39,14 +39,17 @@ public:
 
 	virtual void RefreshServerList() override;
 
-	UFUNCTION(BlueprintCallable, Category = "PPGameInstance")
+	UFUNCTION(BlueprintCallable, Category = "RHGameInstance")
 	void LoadMenuWidget(TSubclassOf<UMenuWidget> MenuClass);
 
-	UFUNCTION(BlueprintCallable, Category = "PPGameInstance")
+	UFUNCTION(BlueprintCallable, Category = "RHGameInstance")
 	void ExitMenu();
 
-	UFUNCTION(BlueprintCallable, Category = "PPGameInstance")
+	UFUNCTION(BlueprintCallable, Category = "RHGameInstance")
 	void OpenMainMenuWithBP();
+
+	UFUNCTION(BlueprintCallable, Category = "RHGameInstance")
+	FString GetServerName() const;
 
 	void StartSession();
 
