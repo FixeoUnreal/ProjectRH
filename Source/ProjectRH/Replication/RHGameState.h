@@ -47,4 +47,10 @@ private:
 
 	TArray<AWayGate*> WayGateList;
 
+	FTimerHandle TimerHandle_InitScoreBoard;
+
+private:
+	UFUNCTION()
+	void ReInitScoreBoard();
+
 };

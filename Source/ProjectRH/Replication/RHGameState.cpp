@@ -5,7 +5,8 @@
 #include <UnrealNetwork.h>
 #include "Terrain/WayGate.h"
 #include <Kismet/GameplayStatics.h>
-
+#include "TimerManager.h"
+#include "Engine/World.h"
 
 ARHGameState::ARHGameState()
 {
@@ -22,6 +23,7 @@ void ARHGameState::BeginPlay()
 	{
 		InitializeScoreBoard();
 	}
+	
 }
 
 void ARHGameState::InitializeScoreBoard()
@@ -47,13 +49,32 @@ void ARHGameState::InitializeScoreBoard()
 		UE_LOG(LogTemp, Warning, TEXT("PlayerArr Size: %d"), PlayerArray.Num());
 	}
 
-	// Populates PlayerStates with array of WayGates in numerical order
-	// and populates score board
+
+	TArray<ARHPlayerState*> RHPlayerArray;
 	for (APlayerState* PlayerState : PlayerArray)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player state name: %s , Inactive: %d"), *PlayerState->GetName(), PlayerState->bIsInactive);
+		UE_LOG(LogTemp, Warning, TEXT("Init player state: %s"), *PlayerState->GetName());
 		ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
-		
+		if (RHPlayerState)
+		{
+			RHPlayerArray.Add(RHPlayerState);
+		}
+	}
+
+	// Check if all player states have the same type
+	if (RHPlayerArray.Num() < PlayerArray.Num())
+	{
+		// Initialize scoreboard when all player states have the same type
+		UE_LOG(LogTemp, Warning, TEXT("Start timer"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_InitScoreBoard, this, &ARHGameState::ReInitScoreBoard, 0.1, true);
+		return;
+	}
+
+	// Populates PlayerStates with array of WayGates in numerical order
+	// and populates score board
+	UE_LOG(LogTemp, Warning, TEXT("Init score board on first attempt yeah"));
+	for (ARHPlayerState* RHPlayerState : RHPlayerArray)
+	{
 		AddNewPlayerToScoreBoard(RHPlayerState);
 	}
 }
@@ -64,10 +85,36 @@ void ARHGameState::Tick(float DeltaSeconds)
 
 	if (HasAuthority() && HasMatchStarted())
 	{
-			UpdateScoreBoard();
+		UpdateScoreBoard();
 	}
 }
 
+
+void ARHGameState::ReInitScoreBoard()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Reinit"));
+	// Check if already initialized
+	if (PositionList.Num() == PlayerArray.Num()) { return; }
+
+	TArray<ARHPlayerState*> RHPlayerArray;
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		ARHPlayerState* RHPlayerState = Cast<ARHPlayerState>(PlayerState);
+		RHPlayerArray.Add(RHPlayerState);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("After casting to rh player state, RHArr Size: %d"), RHPlayerArray.Num());
+	// Check if all player states have the same type
+	if (RHPlayerArray.Num() == PlayerArray.Num())
+	{
+		// Reinitialize score board
+		for (ARHPlayerState* RHPlayerState : RHPlayerArray)
+		{
+			AddNewPlayerToScoreBoard(RHPlayerState);
+		}
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_InitScoreBoard);
+		UE_LOG(LogTemp, Warning, TEXT("Reinit successful"));
+	}
+}
 
 void ARHGameState::UpdateScoreBoard()
 {
@@ -87,9 +134,9 @@ void ARHGameState::UpdateScoreBoard()
 			{
 				return PlayerStateA.GetPassedWayGateCount() > PlayerStateB.GetPassedWayGateCount();
 			}
-			
+
 			return PlayerStateA.GetDistanceToNextWayGate() < PlayerStateB.GetDistanceToNextWayGate();
-			
+
 		});
 	}
 }
@@ -109,11 +156,11 @@ TArray<ARHPlayerState*> ARHGameState::GetPositionList() const
 void ARHGameState::AddNewPlayerToScoreBoard(ARHPlayerState* RHPlayerState)
 {
 	// Populates PlayerState with array of WayGates in numerical order
-	if(!RHPlayerState){ return; }
+	if (!RHPlayerState) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("Enter ADD"));
 
 	// Already in list
-	if(PositionList.Find(RHPlayerState) != INDEX_NONE){ return; }
+	if (PositionList.Find(RHPlayerState) != INDEX_NONE) { return; }
 	UE_LOG(LogTemp, Warning, TEXT("After check exist in list"));
 	if (WayGateList.Num() > 0)
 	{
