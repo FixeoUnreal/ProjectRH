@@ -66,7 +66,6 @@ protected:
 
 	void CreateSession();
 
-
 private:
 	TSubclassOf<UUserWidget> MainMenuClass;
 
@@ -84,4 +83,15 @@ private:
 
 	FString DesiredServerName;
 	
+	void TearDownCurrentMenu();
+
+	void ShowLoadingScreen();
+
+	void ConfigureSessionSettings();
+
+	void DestroyExistingSession();
+
+	void GetServers();
+
+	void JoinMatch(FString ConnectionInfo);
 };

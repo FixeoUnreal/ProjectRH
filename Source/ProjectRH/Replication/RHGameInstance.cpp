@@ -17,14 +17,6 @@ const static FName SESSION_SETTINGS_KEY_SERVER_NAME = TEXT("RHServerName");
 
 URHGameInstance::URHGameInstance(const FObjectInitializer & ObjectInitializer)
 {
-	/*ConstructorHelpers::FClassFinder<UUserWidget> MainMenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
-	if (!ensure(MainMenuBPClass.Class)) { return; }
-	MainMenuClass = MainMenuBPClass.Class;
-
-	ConstructorHelpers::FClassFinder<UUserWidget> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_MenuInGame"));
-	if (!ensure(InGameMenuBPClass.Class)) { return; }
-	InGameMenuClass = InGameMenuBPClass.Class;*/
-
 	ConstructorHelpers::FClassFinder<UUserWidget> LoadingScreenBPClass(TEXT("/Game/UI/WBP_LoadingScreen"));
 	if (!ensure(LoadingScreenBPClass.Class)) { return; }
 	LoadingScreenClass = LoadingScreenBPClass.Class;
@@ -32,11 +24,9 @@ URHGameInstance::URHGameInstance(const FObjectInitializer & ObjectInitializer)
 
 void URHGameInstance::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Init..."));
 	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
 	if (OnlineSubsystem)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Subsystem: %s"), *OnlineSubsystem->GetSubsystemName().ToString());
 		SessionInterface = OnlineSubsystem->GetSessionInterface();
 		if (SessionInterface.IsValid())
 		{
@@ -75,35 +65,62 @@ void URHGameInstance::CreateSession()
 {
 	if (SessionInterface.IsValid())
 	{
-		FOnlineSessionSettings SessionSettings;
-		if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
-		{
-			SessionSettings.bIsLANMatch = true;
-			UE_LOG(LogTemp, Warning, TEXT("Create Lan Session"));
-		}
-		else
-		{
-			SessionSettings.bIsLANMatch = false;
-			UE_LOG(LogTemp, Warning, TEXT("Create Online Session"));
-		}
-		SessionSettings.NumPublicConnections = 5;
-		SessionSettings.bShouldAdvertise = true;
-		SessionSettings.bUsesPresence = true;
-		SessionSettings.Set(SESSION_SETTINGS_KEY_SERVER_NAME, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		FOnlineSessionSettings SessionSettings = ConfigureSessionSettings();
 
 		SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
 }
 
 
+FOnlineSessionSettings URHGameInstance::ConfigureSessionSettings()
+{
+	FOnlineSessionSettings SessionSettings;
+	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+	{
+		SessionSettings.bIsLANMatch = true;
+	}
+	else
+	{
+		SessionSettings.bIsLANMatch = false;
+	}
+	SessionSettings.NumPublicConnections = 5;
+	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.bUsesPresence = true;
+	SessionSettings.Set(SESSION_SETTINGS_KEY_SERVER_NAME, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
+	return SessionSettings;
+}
+
 void URHGameInstance::Join(uint32 Index)
 {
 	if (!SessionInterface.IsValid() || !SessionSearch.IsValid()) { return; }
-	if (CurrentMenu)
+	TearDownCurrentMenu();
+
+	DestroyExistingSession();
+
+	ShowLoadingScreen();
+
+	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
+}
+
+void URHGameInstance::ShowLoadingScreen()
+{
+	if (LoadingScreenClass)
 	{
+		UUserWidget* LoadingScreen = CreateWidget<UUserWidget>(this, LoadingScreenClass);
+		LoadingScreen->AddToViewport();
+	}
+}
+
+void URHGameInstance::TearDownCurrentMenu()
+{
+	if (CurrentMenu) {
 		CurrentMenu->TearDown();
 	}
+}
 
+void URHGameInstance::DestroyExistingSession()
+{
 	// Destroy session if already existed
 	if (SessionInterface.IsValid())
 	{
@@ -114,13 +131,6 @@ void URHGameInstance::Join(uint32 Index)
 			UE_LOG(LogTemp, Warning, TEXT("DEstroy after join called"));
 		}
 	}
-	if (LoadingScreenClass)
-	{
-		UUserWidget* LoadingScreen = CreateWidget<UUserWidget>(this, LoadingScreenClass);
-		LoadingScreen->AddToViewport();
-	}
-	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
-	UE_LOG(LogTemp, Warning, TEXT("After join session"));
 }
 
 void URHGameInstance::OpenMainMenu()
@@ -183,10 +193,8 @@ void URHGameInstance::StartSession()
 
 void URHGameInstance::OnCreateSessionCompleted(FName SessionName, bool Success)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On creation completed"));
 	if (Success)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Creation succeeded"));
 		StartHostSession(SessionName);
 	}
 	else
@@ -197,7 +205,6 @@ void URHGameInstance::OnCreateSessionCompleted(FName SessionName, bool Success)
 
 void URHGameInstance::StartHostSession(FName SessionName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enter Start Session"));
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine)) { return; }
 
@@ -228,38 +235,41 @@ void URHGameInstance::OnDestroySessionCompleted(FName SessionName, bool Success)
 
 void URHGameInstance::OnFindSessionsCompleted(bool bWasSuccessful)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Find sessions completed"));
-
 	// Pass data of all found "servers" to main menu
 	if (bWasSuccessful && SessionSearch.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Find sessions successful"));
-		TArray<FServerData> ServerDataItems;
-		for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Enter find session for loop"));
-			FServerData Data;
-			Data.HostUsername = Result.Session.OwningUserName;
-			Data.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
-			Data.CurrentPlayers = Data.MaxPlayers - Result.Session.NumOpenPublicConnections;
-			FString ServerName;
-			if (Result.Session.SessionSettings.Get(SESSION_SETTINGS_KEY_SERVER_NAME, ServerName))
-			{
-				Data.Name = ServerName;
-			}
-			else
-			{
-				Data.Name = "Could not find name";
-				UE_LOG(LogTemp, Warning, TEXT("Could not get expected session settings value"));
-			}
-			ServerDataItems.Add(Data);
-		}
+		TArray<FServerData> ServerDataItems = GetServers();
 
 		if (!ensure(CurrentMenu)) { return; }
 		UMainMenu* MainMenu = Cast<UMainMenu>(CurrentMenu);
 		if (!ensure(MainMenu)) { return; }
 		MainMenu->SetServerList(ServerDataItems);
 	}
+}
+
+TArray<FServerData> URHGameInstance::GetServers()
+{
+	TArray<FServerData> ServerDataItems;
+	for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
+	{
+		FServerData Data;
+		Data.HostUsername = Result.Session.OwningUserName;
+		Data.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+		Data.CurrentPlayers = Data.MaxPlayers - Result.Session.NumOpenPublicConnections;
+		FString ServerName;
+		if (Result.Session.SessionSettings.Get(SESSION_SETTINGS_KEY_SERVER_NAME, ServerName))
+		{
+			Data.Name = ServerName;
+		}
+		else
+		{
+			Data.Name = "Could not find name";
+			UE_LOG(LogTemp, Warning, TEXT("Could not get expected session settings value"));
+		}
+		ServerDataItems.Add(Data);
+	}
+
+	return ServerDataItems;
 }
 
 void URHGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -275,17 +285,20 @@ void URHGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCom
 			return;
 		}
 
-		// Join match
-		UEngine* Engine = GetEngine();
-		if (!ensure(Engine)) { return; }
-
-		Engine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *ConnectionInfo));
-
-		APlayerController* PC = GetFirstLocalPlayerController();
-		if (!ensure(PC)) { return; }
-
-		PC->ClientTravel(ConnectionInfo, ETravelType::TRAVEL_Absolute);
-		UE_LOG(LogTemp, Warning, TEXT("After client travel"));
+		JoinMatch(ConnectionInfo);
 	}
+}
+
+void URHGameInstance::JoinMatch(FString ConnectionInfo)
+{
+	UEngine* Engine = GetEngine();
+	if (!ensure(Engine)) { return; }
+
+	Engine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *ConnectionInfo));
+
+	APlayerController* PC = GetFirstLocalPlayerController();
+	if (!ensure(PC)) { return; }
+
+	PC->ClientTravel(ConnectionInfo, ETravelType::TRAVEL_Absolute);
 }
 
